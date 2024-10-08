@@ -6,14 +6,18 @@
         "buildType": "apk"
       },
       "ios": {
-        "simulator": true,
-        "image": "latest"
-      }
+        "image": "latest",
+        "developmentClient": true
+      },
+      "channel": "development"
     },
     "production": {
       "distribution": "store",
       "android": {
         "buildType": "app-bundle"
+      },
+      "ios": {
+        "image": "latest"
       }
     }
   }

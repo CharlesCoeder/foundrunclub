@@ -1,0 +1,51 @@
+name: iOS Builds
+
+on:
+  workflow_dispatch:
+    inputs:
+      buildType:
+        description: 'Build Type'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
+
+env:
+  EXPO_PUBLIC_API_URL: ${{secrets.EXPO_PUBLIC_API_URL}}
+  EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID: ${{secrets.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID}}
+  # ... other environment variables ...
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version: 22
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build iOS app
+        working-directory: apps/expo
+        run: eas build --platform ios --local --profile ${{ github.event.inputs.buildType }} --non-interactive --output ${{ github.workspace }}/app-${{ github.event.inputs.buildType }}.ipa
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-${{ github.event.inputs.buildType }}
+          path: ${{ github.workspace }}/app-${{ github.event.inputs.buildType }}.ipa
