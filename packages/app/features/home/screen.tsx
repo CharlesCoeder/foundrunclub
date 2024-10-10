@@ -18,6 +18,7 @@ import { useLink, useRouter } from 'solito/navigation'
 import { useSupabase } from '../../provider/supabase'
 
 export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
+  const router = useRouter()
   const linkTarget = pagesMode ? '/pages-example-user' : '/user'
   const linkProps = useLink({
     href: `${linkTarget}/nate`,
@@ -26,7 +27,6 @@ export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
   const { supabase, user } = useSupabase()
   const [userInfo, setUserInfo] = useState<any>(null)
   const toast = useToastController()
-  const router = useRouter()
 
   useEffect(() => {
     if (user) {
@@ -66,6 +66,10 @@ export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
 
   const handleLogin = () => {
     router.push('/login')
+  }
+
+  const navigateToProfile = (userId: string) => {
+    router.push(`/profile/${userId}`)
   }
 
   return (
@@ -111,6 +115,8 @@ export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
       ) : (
         <Button onPress={handleLogin}>Log In</Button>
       )}
+
+      {userInfo && <Button onPress={() => navigateToProfile(userInfo.id)}>View My Profile</Button>}
 
       <SheetDemo />
     </YStack>
