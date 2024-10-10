@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js'
 
 type SupabaseContextType = {
-  supabase: SupabaseClient
+  supabase: SupabaseClient | null
   user: User | null
 }
 
