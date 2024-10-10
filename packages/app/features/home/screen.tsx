@@ -15,12 +15,31 @@ import { ChevronDown, ChevronUp, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Platform } from 'react-native'
 import { useLink } from 'solito/navigation'
+import { useSupabase } from '../../provider/supabase'
 
 export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
   const linkTarget = pagesMode ? '/pages-example-user' : '/user'
   const linkProps = useLink({
     href: `${linkTarget}/nate`,
   })
+
+  const { supabase } = useSupabase()
+  const [testResult, setTestResult] = useState<string>('Not tested')
+
+  const testSupabase = async () => {
+    if (!supabase) {
+      setTestResult('Supabase client is not initialized')
+      return
+    }
+
+    try {
+      const { data, error } = await supabase.from('users').select('*').limit(1)
+      if (error) throw error
+      setTestResult(`Supabase connection successful. Data: ${JSON.stringify(data)}`)
+    } catch (error) {
+      setTestResult(`Supabase connection failed: ${error.message}`)
+    }
+  }
 
   return (
     <YStack
@@ -53,7 +72,7 @@ export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
           ta="center"
           col="$color12"
         >
-          Welcome to Tamagui.
+          Welcome to Tamagui :D
         </H1>
         <Paragraph
           col="$color10"
@@ -70,11 +89,16 @@ export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
 
       <Button {...linkProps}>Link to user</Button>
 
+      <YStack gap="$4" ai="center">
+        <Button onPress={testSupabase}>Test Supabase Connection</Button>
+        <Paragraph ta="center">Supabase Test Result:</Paragraph>
+        <Paragraph ta="center" col="$color10">{testResult}</Paragraph>
+      </YStack>
+
       <SheetDemo />
     </YStack>
   )
 }
-
 function SheetDemo() {
   const toast = useToastController()
 
