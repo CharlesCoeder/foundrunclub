@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { useRouter } from 'solito/navigation'
 import { YStack, Input, Button, Text, H1 } from 'tamagui'
-import { Toast, useToastController } from '@my/ui'
+import { Toast, useToastController, useToastState } from '@my/ui'
 import { useSupabase } from 'app/provider/supabase'
 
 export function RegisterScreen() {
@@ -13,6 +13,7 @@ export function RegisterScreen() {
   const { supabase } = useSupabase()
   const router = useRouter()
   const toast = useToastController()
+  const currentToast = useToastState()
 
   const handleSignUp = useCallback(async () => {
     if (!supabase) {
@@ -74,7 +75,7 @@ export function RegisterScreen() {
           Log in
         </Text>
       </Text>
-      <Toast />
+      {currentToast && <Toast />}
     </YStack>
   )
 }
