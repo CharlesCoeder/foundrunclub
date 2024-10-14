@@ -7,7 +7,6 @@ import {
   Sheet,
   useToastController,
   SwitchThemeButton,
-  SwitchRouterButton,
   XStack,
   YStack,
 } from '@my/ui'
@@ -17,11 +16,10 @@ import { Platform } from 'react-native'
 import { useLink, useRouter } from 'solito/navigation'
 import { useSupabase } from '../../provider/supabase'
 
-export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
+export function HomeScreen() {
   const router = useRouter()
-  const linkTarget = pagesMode ? '/pages-example-user' : '/user'
   const linkProps = useLink({
-    href: `${linkTarget}/nate`,
+    href: `/user/nate`,
   })
 
   const { supabase, user } = useSupabase()
@@ -83,12 +81,7 @@ export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
         fw="wrap"
         $sm={{ pos: 'relative', t: 0 }}
       >
-        {Platform.OS === 'web' && (
-          <>
-            <SwitchRouterButton pagesMode={pagesMode} />
-            <SwitchThemeButton />
-          </>
-        )}
+        {Platform.OS === 'web' && <SwitchThemeButton />}
       </XStack>
 
       <YStack gap="$4">
