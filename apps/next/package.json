@@ -18,6 +18,7 @@
     "next": "14.2.14",
     "raf": "^3.4.1",
     "react": "^18.3.1",
+    "react-day-picker": "^9.1.4",
     "react-dom": "^18.3.1",
     "react-dropzone": "^14.2.9",
     "react-native": "0.74.2",

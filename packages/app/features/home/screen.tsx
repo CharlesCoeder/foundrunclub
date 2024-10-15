@@ -70,6 +70,10 @@ export function HomeScreen() {
     router.push(`/profile/${userId}`)
   }
 
+  const navigateToSchedule = () => {
+    router.push('/schedule')
+  }
+
   return (
     <YStack f={1} jc="center" ai="center" gap="$8" p="$4" bg="$background">
       <XStack
@@ -110,6 +114,8 @@ export function HomeScreen() {
       )}
 
       {userInfo && <Button onPress={() => navigateToProfile(userInfo.id)}>View My Profile</Button>}
+
+      <Button onPress={navigateToSchedule}>View Schedule</Button>
 
       <SheetDemo />
     </YStack>
