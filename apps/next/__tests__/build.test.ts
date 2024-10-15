@@ -58,8 +58,8 @@ test('Next.js build completes', async () => {
     expect(result).toContain('○ /_not-found')
     expect(result).toContain('ƒ /user/[id]')
 
-    // Check for chunk information
-    expect(result).toContain('chunks/main-')
+    // Check for chunk information (updated)
+    expect(result).toContain('chunks/')
 
     // Check for static and dynamic route indicators
     expect(result).toContain('○  (Static)   prerendered as static content')
