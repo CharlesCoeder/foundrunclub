@@ -15,6 +15,7 @@ import { useState, useEffect } from 'react'
 import { Platform } from 'react-native'
 import { useLink, useRouter } from 'solito/navigation'
 import { useSupabase } from '../../provider/supabase'
+import { useAuth } from 'app/utils/auth/useAuth'
 
 export function HomeScreen() {
   const router = useRouter()
@@ -23,6 +24,7 @@ export function HomeScreen() {
   })
 
   const { supabase, user } = useSupabase()
+  const { isInstructor, isAdmin } = useAuth()
   const [userInfo, setUserInfo] = useState<any>(null)
   const toast = useToastController()
 
@@ -74,6 +76,10 @@ export function HomeScreen() {
     router.push('/schedule')
   }
 
+  const navigateToInstructorRuns = () => {
+    router.push('/instructor')
+  }
+
   return (
     <YStack f={1} jc="center" ai="center" gap="$8" p="$4" bg="$background">
       <XStack
@@ -116,6 +122,10 @@ export function HomeScreen() {
       {userInfo && <Button onPress={() => navigateToProfile(userInfo.id)}>View My Profile</Button>}
 
       <Button onPress={navigateToSchedule}>View Schedule</Button>
+
+      {user && (isInstructor || isAdmin) && (
+        <Button onPress={navigateToInstructorRuns}>Instructor</Button>
+      )}
 
       <SheetDemo />
     </YStack>
