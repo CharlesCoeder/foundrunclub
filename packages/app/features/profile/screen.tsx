@@ -3,7 +3,7 @@ import { YStack, XStack, Button, H1, Paragraph, Input, TextArea, Spinner } from 
 import { useSupabase } from '../../provider/supabase'
 import { useRouter, useParams } from 'solito/navigation'
 import { ChevronLeft } from '@tamagui/lucide-icons'
-import ImagePicker from 'app/components/ImagePicker/ImagePicker'
+import ImagePicker from 'app/features/profile/ImagePicker/ImagePicker'
 import { Platform } from 'react-native'
 import { SolitoImage } from 'solito/image'
 import { DefaultProfilePicture } from 'app/components/DefaultProfilePicture'

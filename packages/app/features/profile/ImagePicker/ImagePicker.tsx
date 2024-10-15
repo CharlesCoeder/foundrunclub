@@ -2,7 +2,7 @@ import React from 'react'
 import { Button, YStack } from '@my/ui'
 import { SolitoImage } from 'solito/image'
 import * as ExpoImagePicker from 'expo-image-picker'
-import { DefaultProfilePicture } from '../DefaultProfilePicture'
+import { DefaultProfilePicture } from '../../../components/DefaultProfilePicture'
 
 interface ImagePickerProps {
   onImageSelect: (uri: string) => void

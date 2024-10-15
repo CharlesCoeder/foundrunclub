@@ -2,7 +2,7 @@ import React, { useRef } from 'react'
 import { Button, YStack } from '@my/ui'
 import { SolitoImage } from 'solito/image'
 import { useDropzone } from 'react-dropzone'
-import { DefaultProfilePicture } from '../DefaultProfilePicture'
+import { DefaultProfilePicture } from '../../../components/DefaultProfilePicture'
 
 interface ImagePickerProps {
   onImageSelect: (uri: string) => void
