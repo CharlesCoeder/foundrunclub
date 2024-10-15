@@ -3,7 +3,6 @@ import { YStack, XStack, Button, H1, Paragraph, Input, TextArea, Spinner } from 
 import { useSupabase } from '../../provider/supabase'
 import { useRouter, useParams } from 'solito/navigation'
 import { ChevronLeft } from '@tamagui/lucide-icons'
-import { SafeAreaView } from 'app/components/SafeAreaView'
 import ImagePicker from 'app/components/ImagePicker/ImagePicker'
 import { Platform } from 'react-native'
 import { SolitoImage } from 'solito/image'
@@ -156,7 +155,6 @@ export function ProfileScreen() {
           style={{ borderRadius: 75 }}
           alt={`${profile.first_name} ${profile.last_name}'s profile picture`}
           contentFit="cover"
-          resizeMode="cover"
           onLayout={() => {}}
         />
       )
@@ -167,75 +165,69 @@ export function ProfileScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView>
-        <YStack f={1} jc="center" ai="center">
-          <Spinner size="large" />
-        </YStack>
-      </SafeAreaView>
+      <YStack f={1} jc="center" ai="center">
+        <Spinner size="large" />
+      </YStack>
     )
   }
 
   if (!profile) {
     return (
-      <SafeAreaView>
-        <YStack f={1} jc="center" ai="center">
-          <Paragraph>Profile not found</Paragraph>
-          <Button onPress={handleReturnHome}>Return to Home</Button>
-        </YStack>
-      </SafeAreaView>
+      <YStack f={1} jc="center" ai="center">
+        <Paragraph>Profile not found</Paragraph>
+        <Button onPress={handleReturnHome}>Return to Home</Button>
+      </YStack>
     )
   }
 
   return (
-    <SafeAreaView>
-      <YStack f={1} jc="flex-start" ai="center" p="$4">
-        <XStack w="100%" jc="flex-start" mb="$4" mt="$2">
-          <Button icon={ChevronLeft} theme="alt2" onPress={handleReturnHome}>
-            Return to Home
-          </Button>
-        </XStack>
+    <YStack f={1} jc="flex-start" ai="center" p="$4">
+      <XStack w="100%" jc="flex-start" mb="$4" mt="$2">
+        <Button icon={ChevronLeft} theme="alt2" onPress={handleReturnHome}>
+          Return to Home
+        </Button>
+      </XStack>
 
-        <YStack ai="center" mb="$4">
-          {renderProfileImage()}
-        </YStack>
-
-        {isEditing ? (
-          <YStack ai="stretch" w="100%" maxWidth={300}>
-            <Input
-              value={editedProfile.first_name}
-              onChangeText={(text) => setEditedProfile({ ...editedProfile, first_name: text })}
-              placeholder="First Name"
-              mb="$2"
-            />
-            <Input
-              value={editedProfile.last_name}
-              onChangeText={(text) => setEditedProfile({ ...editedProfile, last_name: text })}
-              placeholder="Last Name"
-              mb="$2"
-            />
-            <TextArea
-              value={editedProfile.bio}
-              onChangeText={(text) => setEditedProfile({ ...editedProfile, bio: text })}
-              placeholder="Bio"
-              mb="$4"
-            />
-            <XStack jc="space-between">
-              <Button onPress={handleSave}>Save</Button>
-              <Button onPress={handleCancel} theme="alt2">
-                Cancel
-              </Button>
-            </XStack>
-          </YStack>
-        ) : (
-          <YStack ai="center">
-            <H1 mb="$2">
-              {profile.first_name} {profile.last_name}
-            </H1>
-            <Paragraph mb="$4">{profile.bio || 'No bio available'}</Paragraph>
-            {isOwnProfile && <Button onPress={handleEdit}>Edit Profile</Button>}
-          </YStack>
-        )}
+      <YStack ai="center" mb="$4">
+        {renderProfileImage()}
       </YStack>
-    </SafeAreaView>
+
+      {isEditing ? (
+        <YStack ai="stretch" w="100%" maxWidth={300}>
+          <Input
+            value={editedProfile.first_name}
+            onChangeText={(text) => setEditedProfile({ ...editedProfile, first_name: text })}
+            placeholder="First Name"
+            mb="$2"
+          />
+          <Input
+            value={editedProfile.last_name}
+            onChangeText={(text) => setEditedProfile({ ...editedProfile, last_name: text })}
+            placeholder="Last Name"
+            mb="$2"
+          />
+          <TextArea
+            value={editedProfile.bio}
+            onChangeText={(text) => setEditedProfile({ ...editedProfile, bio: text })}
+            placeholder="Bio"
+            mb="$4"
+          />
+          <XStack jc="space-between">
+            <Button onPress={handleSave}>Save</Button>
+            <Button onPress={handleCancel} theme="alt2">
+              Cancel
+            </Button>
+          </XStack>
+        </YStack>
+      ) : (
+        <YStack ai="center">
+          <H1 mb="$2">
+            {profile.first_name} {profile.last_name}
+          </H1>
+          <Paragraph mb="$4">{profile.bio || 'No bio available'}</Paragraph>
+          {isOwnProfile && <Button onPress={handleEdit}>Edit Profile</Button>}
+        </YStack>
+      )}
+    </YStack>
   )
 }
