@@ -1,4 +1,3 @@
-/** @type {import('next').NextConfig} */
 const { withTamagui } = require('@tamagui/next-plugin')
 const { join } = require('node:path')
 
@@ -28,29 +27,38 @@ const plugins = [
   }),
 ]
 
+// Extract the Supabase domain from the environment variable
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const supabaseDomain = supabaseUrl.match(/^https?:\/\/(.+)$/)?.[1] || ''
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  modularizeImports: {
+    '@tamagui/lucide-icons': {
+      transform: `@tamagui/lucide-icons/dist/esm/icons/{{kebabCase member}}`,
+      skipDefaultConversion: true,
+    },
+  },
+  transpilePackages: [
+    'solito',
+    'react-native-web',
+    'expo-linking',
+    'expo-constants',
+    'expo-modules-core',
+  ],
+  experimental: {
+    scrollRestoration: true,
+  },
+  images: {
+    domains: supabaseDomain ? [supabaseDomain] : [],
+  },
+}
+
 module.exports = () => {
-  /** @type {import('next').NextConfig} */
-  let config = {
-    typescript: {
-      ignoreBuildErrors: true,
-    },
-    modularizeImports: {
-      '@tamagui/lucide-icons': {
-        transform: `@tamagui/lucide-icons/dist/esm/icons/{{kebabCase member}}`,
-        skipDefaultConversion: true,
-      },
-    },
-    transpilePackages: [
-      'solito',
-      'react-native-web',
-      'expo-linking',
-      'expo-constants',
-      'expo-modules-core',
-    ],
-    experimental: {
-      scrollRestoration: true,
-    },
-  }
+  let config = { ...nextConfig }
 
   for (const plugin of plugins) {
     config = {

@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react'
-import { YStack, XStack, Image, Button, H1, Paragraph, Input, TextArea, Spinner } from '@my/ui'
+import { YStack, XStack, Button, H1, Paragraph, Input, TextArea, Spinner } from '@my/ui'
 import { useSupabase } from '../../provider/supabase'
 import { useRouter, useParams } from 'solito/navigation'
 import { ChevronLeft } from '@tamagui/lucide-icons'
 import { SafeAreaView } from 'app/components/SafeAreaView'
+import ImagePicker from 'app/components/ImagePicker/ImagePicker'
+import { Platform } from 'react-native'
+import { SolitoImage } from 'solito/image'
+import { DefaultProfilePicture } from 'app/components/DefaultProfilePicture'
 
 export function ProfileScreen() {
   const { supabase, user } = useSupabase()
@@ -14,6 +18,7 @@ export function ProfileScreen() {
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [editedProfile, setEditedProfile] = useState<any>(null)
+  const [tempImageUri, setTempImageUri] = useState<string | null>(null)
 
   const isOwnProfile = user?.id === id
 
@@ -40,7 +45,6 @@ export function ProfileScreen() {
       setProfile(null)
       setEditedProfile(null)
     } else if (data && data.length > 0) {
-      console.log('Fetched profile data:', data)
       setProfile(data[0]) // Set the first (and only) object in the array
       setEditedProfile(data[0])
     } else {
@@ -57,25 +61,108 @@ export function ProfileScreen() {
   }
 
   const handleSave = async () => {
-    if (!supabase) return
+    if (!supabase || !user) return
 
-    const { error } = await supabase.from('users').update(editedProfile).eq('id', user?.id)
+    try {
+      let publicUrl = profile.profile_image_url
 
-    if (error) {
-      console.error('Error updating profile:', error)
-    } else {
-      setProfile(editedProfile)
+      if (tempImageUri) {
+        const fileName = `${user.id}_${Date.now()}.jpg`
+
+        // Upload image
+        const { data, error: uploadError } = await uploadImage(tempImageUri, fileName)
+
+        if (uploadError) throw uploadError
+
+        // Get the public URL for the uploaded image
+        const {
+          data: { publicUrl: newPublicUrl },
+        } = await supabase.storage.from('profile_images').getPublicUrl(fileName)
+
+        publicUrl = newPublicUrl
+      }
+
+      // Update the profile with all changes, including the new image URL if applicable
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ ...editedProfile, profile_image_url: publicUrl })
+        .eq('id', user.id)
+
+      if (updateError) throw updateError
+
+      setProfile({ ...editedProfile, profile_image_url: publicUrl })
       setIsEditing(false)
+      setTempImageUri(null)
+    } catch (error) {
+      console.error('Error updating profile:', error)
+    }
+  }
+
+  const uploadImage = async (uri: string, fileName: string) => {
+    if (!supabase) {
+      throw new Error('Supabase client is not initialized')
+    }
+
+    if (Platform.OS === 'web') {
+      // For web
+      const response = await fetch(uri)
+      const blob = await response.blob()
+
+      return await supabase.storage.from('profile_images').upload(fileName, blob, {
+        contentType: 'image/jpeg',
+      })
+    } else {
+      // For native (iOS and Android)
+      const response = await fetch(uri)
+      const blob = await response.blob()
+      const arrayBuffer = await new Response(blob).arrayBuffer()
+
+      return await supabase.storage.from('profile_images').upload(fileName, arrayBuffer, {
+        contentType: 'image/jpeg',
+      })
     }
   }
 
   const handleCancel = () => {
     setEditedProfile(profile)
     setIsEditing(false)
+    setTempImageUri(null)
   }
 
   const handleReturnHome = () => {
     router.push('/')
+  }
+
+  const handleImageSelect = (uri: string) => {
+    setTempImageUri(uri)
+    setEditedProfile((prev: any) => ({ ...prev, profile_image_url: uri }))
+  }
+
+  const renderProfileImage = () => {
+    if (isEditing) {
+      return (
+        <ImagePicker
+          onImageSelect={handleImageSelect}
+          currentImageUri={tempImageUri || profile.profile_image_url}
+          name={`${profile.first_name} ${profile.last_name}`}
+        />
+      )
+    } else if (profile.profile_image_url) {
+      return (
+        <SolitoImage
+          src={profile.profile_image_url}
+          width={150}
+          height={150}
+          style={{ borderRadius: 75 }}
+          alt={`${profile.first_name} ${profile.last_name}'s profile picture`}
+          contentFit="cover"
+          resizeMode="cover"
+          onLayout={() => {}}
+        />
+      )
+    } else {
+      return <DefaultProfilePicture name={`${profile.first_name} ${profile.last_name}`} />
+    }
   }
 
   if (isLoading) {
@@ -99,8 +186,6 @@ export function ProfileScreen() {
     )
   }
 
-  console.log('profile', profile)
-
   return (
     <SafeAreaView>
       <YStack f={1} jc="flex-start" ai="center" p="$4">
@@ -110,13 +195,9 @@ export function ProfileScreen() {
           </Button>
         </XStack>
 
-        <Image
-          source={{ uri: profile?.profile_image_url || 'https://via.placeholder.com/150' }}
-          width={150}
-          height={150}
-          borderRadius={75}
-          mb="$4"
-        />
+        <YStack ai="center" mb="$4">
+          {renderProfileImage()}
+        </YStack>
 
         {isEditing ? (
           <YStack ai="stretch" w="100%" maxWidth={300}>
