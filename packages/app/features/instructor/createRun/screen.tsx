@@ -1,11 +1,23 @@
 import { useState } from 'react'
-import { Button, Input, YStack, Text, useToastController, ScrollView } from '@my/ui'
+import {
+  Button,
+  Input,
+  YStack,
+  Text,
+  useToastController,
+  ScrollView,
+  useMedia,
+  Adapt,
+  Select,
+  Sheet,
+} from '@my/ui'
 import { useRouter } from 'solito/navigation'
 import { useAuth } from 'app/utils/auth/useAuth'
 import { useInsertRun } from 'app/utils/instructors/insertRun'
 import { KeyboardAvoidingView, Platform } from 'react-native'
 import { RunCreate } from 'app/types/run'
 import { DayPicker } from './DayPicker/DayPicker'
+import { ChevronDown } from '@tamagui/lucide-icons'
 
 export function CreateRunScreen() {
   const [date, setDate] = useState<Date>(new Date())
@@ -19,6 +31,36 @@ export function CreateRunScreen() {
   const { insertRun } = useInsertRun()
   const router = useRouter()
   const toast = useToastController()
+  const media = useMedia()
+
+  // Generate time options from 6am to midnight in 30min intervals
+  const timeOptions = Array.from({ length: 37 }, (_, i) => {
+    const hour = Math.floor(i / 2) + 6
+    const minute = (i % 2) * 30
+    const hour12 = hour % 12 || 12 // Convert 0 to 12 for midnight
+    const ampm = hour < 12 || hour === 24 ? 'AM' : 'PM'
+    return {
+      value: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
+      label: `${hour12}:${minute.toString().padStart(2, '0')} ${ampm}`,
+    }
+  })
+
+  // Generate pace options from 7:00 to 11:00 with 30sec intervals
+  const paceOptions = Array.from({ length: 17 }, (_, i) => {
+    const baseMinutes = 7
+    const totalSeconds = baseMinutes * 60 + i * 30
+    const minutes = Math.floor(totalSeconds / 60)
+    const seconds = totalSeconds % 60
+    return {
+      value: `${minutes}:${seconds.toString().padStart(2, '0')}`,
+      label: `${minutes}:${seconds.toString().padStart(2, '0')} min/mi`,
+    }
+  })
+
+  const locationOptions = [
+    { value: 'Midtown East', label: 'Midtown East' },
+    { value: 'Turtle Bay', label: 'Turtle Bay' },
+  ]
 
   const handleSubmit = async () => {
     if (!isInstructor && !isAdmin) {
@@ -56,6 +98,20 @@ export function CreateRunScreen() {
     return <Text>You do not have permission to access this page.</Text>
   }
 
+  const fullSheetProps = {
+    modal: true,
+    dismissOnSnapToBottom: true,
+    snapPoints: [50],
+    position: 0,
+  }
+
+  const smallSheetProps = {
+    modal: true,
+    dismissOnSnapToBottom: true,
+    snapPoints: [15],
+    position: 0,
+  }
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -74,27 +130,103 @@ export function CreateRunScreen() {
             month={new Date()}
           />
 
-          <Input placeholder="Time (HH:MM)" value={time} onChangeText={setTime} required />
+          {/* Time Select */}
+          <Select value={time} onValueChange={setTime}>
+            <Select.Trigger width="100%" iconAfter={ChevronDown}>
+              <Select.Value placeholder="Select Time" />
+            </Select.Trigger>
+
+            <Adapt platform="touch">
+              <Sheet {...fullSheetProps}>
+                <Sheet.Frame>
+                  <Sheet.ScrollView>
+                    <Adapt.Contents />
+                  </Sheet.ScrollView>
+                </Sheet.Frame>
+                <Sheet.Overlay />
+              </Sheet>
+            </Adapt>
+
+            <Select.Content>
+              <Select.Viewport>
+                <Select.Group>
+                  {timeOptions.map((option, index) => (
+                    <Select.Item key={option.value} value={option.value} index={index}>
+                      <Select.ItemText>{option.label}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Group>
+              </Select.Viewport>
+            </Select.Content>
+          </Select>
+
+          {/* Pace Select */}
+          <Select value={targetPace} onValueChange={setTargetPace}>
+            <Select.Trigger width="100%" iconAfter={ChevronDown}>
+              <Select.Value placeholder="Select Target Pace" />
+            </Select.Trigger>
+
+            <Adapt platform="touch">
+              <Sheet {...fullSheetProps}>
+                <Sheet.Frame>
+                  <Sheet.ScrollView>
+                    <Adapt.Contents />
+                  </Sheet.ScrollView>
+                </Sheet.Frame>
+                <Sheet.Overlay />
+              </Sheet>
+            </Adapt>
+
+            <Select.Content>
+              <Select.Viewport>
+                <Select.Group>
+                  {paceOptions.map((option, index) => (
+                    <Select.Item key={option.value} value={option.value} index={index}>
+                      <Select.ItemText>{option.label}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Group>
+              </Select.Viewport>
+            </Select.Content>
+          </Select>
+
           <Input
-            placeholder="Target Pace (MM:SS)"
-            value={targetPace}
-            onChangeText={setTargetPace}
-            required
-          />
-          <Input
-            placeholder="Distance (km)"
+            placeholder="Distance (mi)"
             value={distance}
             onChangeText={setDistance}
             keyboardType="numeric"
             required
           />
           <Input placeholder="Route (optional)" value={route} onChangeText={setRoute} />
-          <Input
-            placeholder="Meetup Location"
-            value={meetupLocation}
-            onChangeText={setMeetupLocation}
-            required
-          />
+          {/* Location Select */}
+          <Select value={meetupLocation} onValueChange={setMeetupLocation}>
+            <Select.Trigger width="100%" iconAfter={ChevronDown}>
+              <Select.Value placeholder="Select Meetup Location" />
+            </Select.Trigger>
+
+            <Adapt platform="touch">
+              <Sheet {...smallSheetProps}>
+                <Sheet.Frame>
+                  <Sheet.ScrollView>
+                    <Adapt.Contents />
+                  </Sheet.ScrollView>
+                </Sheet.Frame>
+                <Sheet.Overlay />
+              </Sheet>
+            </Adapt>
+
+            <Select.Content>
+              <Select.Viewport>
+                <Select.Group>
+                  {locationOptions.map((option, index) => (
+                    <Select.Item key={option.value} value={option.value} index={index}>
+                      <Select.ItemText>{option.label}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Group>
+              </Select.Viewport>
+            </Select.Content>
+          </Select>
           <Button
             onPress={handleSubmit}
             marginVertical="$4"
