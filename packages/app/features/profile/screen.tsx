@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { YStack, XStack, Button, H1, Paragraph, Input, TextArea, Spinner } from '@my/ui'
 import { useSupabase } from '../../provider/supabase'
 import { useRouter, useParams } from 'solito/navigation'
-import { ChevronLeft } from '@tamagui/lucide-icons'
 import ImagePicker from 'app/features/profile/ImagePicker/ImagePicker'
 import { Platform } from 'react-native'
 import { SolitoImage } from 'solito/image'
@@ -128,10 +127,6 @@ export function ProfileScreen() {
     setTempImageUri(null)
   }
 
-  const handleReturnHome = () => {
-    router.push('/')
-  }
-
   const handleImageSelect = (uri: string) => {
     setTempImageUri(uri)
     setEditedProfile((prev: any) => ({ ...prev, profile_image_url: uri }))
@@ -175,19 +170,12 @@ export function ProfileScreen() {
     return (
       <YStack f={1} jc="center" ai="center">
         <Paragraph>Profile not found</Paragraph>
-        <Button onPress={handleReturnHome}>Return to Home</Button>
       </YStack>
     )
   }
 
   return (
     <YStack f={1} jc="flex-start" ai="center" p="$4">
-      <XStack w="100%" jc="flex-start" mb="$4" mt="$2">
-        <Button icon={ChevronLeft} theme="alt2" onPress={handleReturnHome}>
-          Return to Home
-        </Button>
-      </XStack>
-
       <YStack ai="center" mb="$4">
         {renderProfileImage()}
       </YStack>

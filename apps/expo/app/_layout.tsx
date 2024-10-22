@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react'
 import { useColorScheme } from 'react-native'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
-import { SplashScreen, Stack } from 'expo-router'
+import { SplashScreen, Stack, Tabs } from 'expo-router'
 import { Provider } from 'app/provider'
 import { NativeToast } from '@my/ui/src/NativeToast'
 import { useSupabase } from 'app/provider/supabase'
 import { Session } from '@supabase/supabase-js'
+import { useAuth } from 'app/utils/auth/useAuth'
 
 export const unstable_settings = {
   // Ensure that reloading on `/user` keeps a back button present.
@@ -40,6 +41,7 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme()
   const { supabase } = useSupabase()
   const [session, setSession] = useState<Session | null>(null)
+  const { isInstructor, isAdmin } = useAuth()
 
   useEffect(() => {
     if (supabase) {
@@ -61,11 +63,7 @@ function RootLayoutNav() {
     <Provider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack screenOptions={{ headerShown: false }}>
-          {session ? (
-            <Stack.Screen name="index" />
-          ) : (
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          )}
+          {session ? <Stack.Screen name="(tabs)" /> : <Stack.Screen name="(auth)" />}
         </Stack>
         <NativeToast />
       </ThemeProvider>

@@ -10,7 +10,7 @@ export default function InstructorLayout() {
     return (
       <YStack f={1} jc="center" ai="center" p="$4">
         <Text>You do not have permission to access this section.</Text>
-        <Button onPress={() => router.push('/')}>Go Back to Home</Button>
+        <Button onPress={() => router.back()}>Go Back</Button>
       </YStack>
     )
   }
