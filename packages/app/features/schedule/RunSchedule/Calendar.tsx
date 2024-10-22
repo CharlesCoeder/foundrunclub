@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Calendar as RNCalendar, DateData } from 'react-native-calendars'
-import { Card } from 'tamagui'
+import { Card, Spinner } from '@my/ui'
 import { Theme } from 'react-native-calendars/src/types'
 
 interface CalendarProps {
@@ -9,6 +9,7 @@ interface CalendarProps {
   selectedDate: Date | undefined
   selectedRun: number | null
   onDateSelect: (date: Date | undefined) => void
+  isLoading: boolean
 }
 
 export function Calendar({
@@ -17,6 +18,7 @@ export function Calendar({
   selectedDate,
   selectedRun,
   onDateSelect,
+  isLoading,
 }: CalendarProps) {
   const markedDates = useMemo(() => {
     const dates: {
@@ -68,16 +70,20 @@ export function Calendar({
 
   return (
     <Card elevate padding="$4" width={350}>
-      <RNCalendar
-        key={currentMonth.toISOString()}
-        current={currentMonth.toISOString()}
-        onDayPress={handleDayPress}
-        markedDates={markedDates}
-        markingType={'dot'}
-        theme={theme}
-        enableSwipeMonths={false}
-        hideArrows={true}
-      />
+      {isLoading ? (
+        <Spinner size="large" />
+      ) : (
+        <RNCalendar
+          key={currentMonth.toISOString()}
+          current={currentMonth.toISOString()}
+          onDayPress={handleDayPress}
+          markedDates={markedDates}
+          markingType={'dot'}
+          theme={theme}
+          enableSwipeMonths={false}
+          hideArrows={true}
+        />
+      )}
     </Card>
   )
 }

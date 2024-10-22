@@ -8,9 +8,10 @@ interface RunListProps {
   currentMonth: Date
   selectedRun: number | null
   onRunSelect: (runId: number) => void
+  isLoading: boolean
 }
 
-export function RunList({ runs, currentMonth, selectedRun, onRunSelect }: RunListProps) {
+export function RunList({ runs, currentMonth, selectedRun, onRunSelect, isLoading }: RunListProps) {
   const filteredRuns = useMemo(() => {
     return runs.filter(
       (run) =>
@@ -27,44 +28,50 @@ export function RunList({ runs, currentMonth, selectedRun, onRunSelect }: RunLis
           {currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
         </Text>
         <ScrollView flex={1}>
-          <YStack gap="$2">
-            {filteredRuns.map((run) => (
-              <Card
-                key={run.id}
-                padding="$2"
-                pressStyle={{ backgroundColor: '$backgroundHover' }}
-                backgroundColor={selectedRun === run.id ? '$green2' : undefined}
-                onPress={() => onRunSelect(run.id)}
-              >
-                <XStack justifyContent="space-between" alignItems="flex-start" marginBottom="$2">
-                  <Text fontWeight="bold">
-                    {run.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </Text>
-                  <Text fontSize="$2" color="$blue10">
-                    {run.distance}
-                  </Text>
-                </XStack>
-                <XStack alignItems="center" marginBottom="$1">
-                  <Clock size={16} />
-                  <Text fontSize="$2" marginLeft="$1">
-                    {run.time}
-                  </Text>
-                </XStack>
-                <XStack alignItems="center" marginBottom="$1">
-                  <MapPin size={16} />
-                  <Text fontSize="$2" marginLeft="$1">
-                    {run.meetup_location}
-                  </Text>
-                </XStack>
-                <XStack alignItems="center">
-                  <Ruler size={16} />
-                  <Text fontSize="$2" marginLeft="$1">
-                    Pace: {run.target_pace}
-                  </Text>
-                </XStack>
-              </Card>
-            ))}
-          </YStack>
+          {isLoading ? (
+            <Text>Loading runs...</Text>
+          ) : filteredRuns.length === 0 ? (
+            <Text>No runs scheduled for this month</Text>
+          ) : (
+            <YStack gap="$2">
+              {filteredRuns.map((run) => (
+                <Card
+                  key={run.id}
+                  padding="$2"
+                  pressStyle={{ backgroundColor: '$backgroundHover' }}
+                  backgroundColor={selectedRun === run.id ? '$green2' : undefined}
+                  onPress={() => onRunSelect(run.id)}
+                >
+                  <XStack justifyContent="space-between" alignItems="flex-start" marginBottom="$2">
+                    <Text fontWeight="bold">
+                      {run.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </Text>
+                    <Text fontSize="$2" color="$blue10">
+                      {run.distance}
+                    </Text>
+                  </XStack>
+                  <XStack alignItems="center" marginBottom="$1">
+                    <Clock size={16} />
+                    <Text fontSize="$2" marginLeft="$1">
+                      {run.time}
+                    </Text>
+                  </XStack>
+                  <XStack alignItems="center" marginBottom="$1">
+                    <MapPin size={16} />
+                    <Text fontSize="$2" marginLeft="$1">
+                      {run.meetup_location}
+                    </Text>
+                  </XStack>
+                  <XStack alignItems="center">
+                    <Ruler size={16} />
+                    <Text fontSize="$2" marginLeft="$1">
+                      Pace: {run.target_pace}
+                    </Text>
+                  </XStack>
+                </Card>
+              ))}
+            </YStack>
+          )}
         </ScrollView>
       </YStack>
     </Card>

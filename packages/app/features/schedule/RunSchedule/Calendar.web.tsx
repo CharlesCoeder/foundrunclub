@@ -1,6 +1,6 @@
 import { DayPicker } from 'react-day-picker'
 import 'react-day-picker/dist/style.css'
-import { Card } from 'tamagui'
+import { Card, Spinner } from '@my/ui'
 
 interface CalendarProps {
   runs: Array<{ id: number; date: Date }>
@@ -8,6 +8,7 @@ interface CalendarProps {
   selectedDate: Date | undefined
   selectedRun: number | null
   onDateSelect: (date: Date | undefined) => void
+  isLoading: boolean
 }
 
 export function Calendar({
@@ -16,6 +17,7 @@ export function Calendar({
   selectedDate,
   selectedRun,
   onDateSelect,
+  isLoading,
 }: CalendarProps) {
   const isDayWithRun = (date: Date) => {
     return runs.some((run) => run.date.toDateString() === date.toDateString())
@@ -23,27 +25,31 @@ export function Calendar({
 
   return (
     <Card elevate padding="$4" width={350}>
-      <DayPicker
-        mode="single"
-        selected={selectedDate}
-        onSelect={onDateSelect}
-        month={currentMonth}
-        hideNavigation
-        modifiers={{
-          hasRun: isDayWithRun,
-          selected: (date) =>
-            selectedRun !== null &&
-            runs.find((r) => r.id === selectedRun)?.date.toDateString() === date.toDateString(),
-        }}
-        modifiersStyles={{
-          hasRun: { backgroundColor: 'rgba(59, 130, 246, 0.1)', fontWeight: 'bold' },
-          selected: {
-            backgroundColor: 'rgba(34, 197, 94, 0.2)',
-            color: 'rgb(21, 128, 61)',
-            fontWeight: 'bold',
-          },
-        }}
-      />
+      {isLoading ? (
+        <Spinner size="large" />
+      ) : (
+        <DayPicker
+          mode="single"
+          selected={selectedDate}
+          onSelect={onDateSelect}
+          month={currentMonth}
+          hideNavigation
+          modifiers={{
+            hasRun: isDayWithRun,
+            selected: (date) =>
+              selectedRun !== null &&
+              runs.find((r) => r.id === selectedRun)?.date.toDateString() === date.toDateString(),
+          }}
+          modifiersStyles={{
+            hasRun: { backgroundColor: 'rgba(59, 130, 246, 0.1)', fontWeight: 'bold' },
+            selected: {
+              backgroundColor: 'rgba(34, 197, 94, 0.2)',
+              color: 'rgb(21, 128, 61)',
+              fontWeight: 'bold',
+            },
+          }}
+        />
+      )}
     </Card>
   )
 }
