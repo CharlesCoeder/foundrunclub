@@ -5,6 +5,7 @@ import { useAuth } from 'app/utils/auth/useAuth'
 import { useInsertRun } from 'app/utils/instructors/insertRun'
 import { KeyboardAvoidingView, Platform } from 'react-native'
 import { RunCreate } from 'app/types/run'
+import { DayPicker } from './DayPicker/DayPicker'
 
 export function CreateRunScreen() {
   const [date, setDate] = useState<Date>(new Date())
@@ -65,11 +66,14 @@ export function CreateRunScreen() {
           <Text fontSize="$6" fontWeight="bold">
             Create New Run
           </Text>
-          <Input
-            placeholder="Date (YYYY-MM-DD)"
-            value={date.toISOString().split('T')[0]}
-            onChangeText={(value) => setDate(new Date(value))}
+
+          {/* Replace the date Input with DayPicker */}
+          <DayPicker
+            selected={date}
+            onSelect={(selectedDate) => selectedDate && setDate(selectedDate)}
+            month={new Date()}
           />
+
           <Input placeholder="Time (HH:MM)" value={time} onChangeText={setTime} required />
           <Input
             placeholder="Target Pace (MM:SS)"
