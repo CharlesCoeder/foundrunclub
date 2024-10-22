@@ -2,21 +2,21 @@ import { useEffect, useState } from 'react'
 import { Button, YStack, XStack, Text, ScrollView, Spinner, Card } from '@my/ui'
 import { useRouter } from 'solito/navigation'
 import { useAuth } from 'app/utils/auth/useAuth'
-import { useGetRuns, Run } from '../../utils/instructors/getInstructorRuns'
-
+import { useGetInstructorRuns } from '../../utils/instructors/getInstructorRuns'
+import { Run } from 'app/types/run'
 export function InstructorScreen() {
   const [runs, setRuns] = useState<Run[] | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   const { user, isInstructor, isAdmin } = useAuth()
-  const { getUpcomingRuns } = useGetRuns()
+  const { getUpcomingInstructorRuns } = useGetInstructorRuns()
   const router = useRouter()
 
   useEffect(() => {
     const fetchRuns = async () => {
       setLoading(true)
-      const { data, error } = await getUpcomingRuns()
+      const { data, error } = await getUpcomingInstructorRuns()
       if (error) {
         setError('Failed to fetch runs')
         setRuns(null)
@@ -62,7 +62,6 @@ export function InstructorScreen() {
               <Text>Target Pace: {run.target_pace}</Text>
               {run.route && <Text>Route: {run.route}</Text>}
               {run.meetup_location && <Text>Meetup: {run.meetup_location}</Text>}
-              {run.max_participants && <Text>Max Participants: {run.max_participants}</Text>}
             </Card>
           ))}
         </ScrollView>

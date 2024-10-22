@@ -1,20 +1,9 @@
 import { useSupabase } from 'app/provider/supabase'
-
-interface RunData {
-  date: string
-  time: string
-  target_pace: string
-  distance: number
-  route?: string
-  meetup_location?: string
-  max_participants?: number
-  qr_code: string
-}
-
+import { RunCreate } from 'app/types/run'
 export const useInsertRun = () => {
   const { supabase } = useSupabase()
 
-  const insertRun = async (runData: RunData) => {
+  const insertRun = async (runData: RunCreate) => {
     if (!supabase) {
       throw new Error('Supabase client is not available')
     }

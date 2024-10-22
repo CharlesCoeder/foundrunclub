@@ -1,15 +1,7 @@
 import { useMemo } from 'react'
 import { Card, YStack, XStack, Text, ScrollView } from 'tamagui'
 import { MapPin, Clock, Ruler } from '@tamagui/lucide-icons'
-
-interface Run {
-  id: number
-  date: Date
-  distance: string
-  time: string
-  location: string
-  pace: string
-}
+import { Run } from 'app/types/run'
 
 interface RunListProps {
   runs: Run[]
@@ -19,8 +11,6 @@ interface RunListProps {
 }
 
 export function RunList({ runs, currentMonth, selectedRun, onRunSelect }: RunListProps) {
-  
-
   const filteredRuns = useMemo(() => {
     return runs.filter(
       (run) =>
@@ -63,13 +53,13 @@ export function RunList({ runs, currentMonth, selectedRun, onRunSelect }: RunLis
                 <XStack alignItems="center" marginBottom="$1">
                   <MapPin size={16} />
                   <Text fontSize="$2" marginLeft="$1">
-                    {run.location}
+                    {run.meetup_location}
                   </Text>
                 </XStack>
                 <XStack alignItems="center">
                   <Ruler size={16} />
                   <Text fontSize="$2" marginLeft="$1">
-                    Pace: {run.pace}
+                    Pace: {run.target_pace}
                   </Text>
                 </XStack>
               </Card>

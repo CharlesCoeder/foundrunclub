@@ -1,23 +1,12 @@
+import { InstructorRun } from 'app/types/run'
 import { useSupabase } from 'app/provider/supabase'
 import { PostgrestError } from '@supabase/supabase-js'
 
-export interface Run {
-  id: string
-  date: string
-  time: string
-  target_pace: string
-  distance: number
-  route?: string
-  meetup_location?: string
-  max_participants?: number
-  qr_code: string
-}
-
-export const useGetRuns = () => {
+export const useGetInstructorRuns = () => {
   const { supabase } = useSupabase()
 
-  const getUpcomingRuns = async (): Promise<{
-    data: Run[] | null
+  const getUpcomingInstructorRuns = async (): Promise<{
+    data: InstructorRun[] | null
     error: PostgrestError | null
   }> => {
     if (!supabase) {
@@ -44,10 +33,17 @@ export const useGetRuns = () => {
 
     if (error) {
       console.error('Error fetching runs:', error)
+      return { data: null, error }
     }
 
-    return { data: data as Run[] | null, error }
+    return {
+      data: data.map((run) => ({
+        ...run,
+        date: new Date(run.date),
+      })) as InstructorRun[],
+      error: null,
+    }
   }
 
-  return { getUpcomingRuns }
+  return { getUpcomingInstructorRuns }
 }

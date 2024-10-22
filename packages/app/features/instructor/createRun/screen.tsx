@@ -4,15 +4,15 @@ import { useRouter } from 'solito/navigation'
 import { useAuth } from 'app/utils/auth/useAuth'
 import { useInsertRun } from 'app/utils/instructors/insertRun'
 import { KeyboardAvoidingView, Platform } from 'react-native'
+import { RunCreate } from 'app/types/run'
 
 export function CreateRunScreen() {
-  const [date, setDate] = useState('')
+  const [date, setDate] = useState<Date>(new Date())
   const [time, setTime] = useState('')
   const [targetPace, setTargetPace] = useState('')
   const [distance, setDistance] = useState('')
   const [route, setRoute] = useState('')
   const [meetupLocation, setMeetupLocation] = useState('')
-  const [maxParticipants, setMaxParticipants] = useState('')
 
   const { user, isInstructor, isAdmin } = useAuth()
   const { insertRun } = useInsertRun()
@@ -25,20 +25,24 @@ export function CreateRunScreen() {
       return
     }
 
-    const runData = {
+    if (!time || !targetPace || !distance || !meetupLocation) {
+      toast.show('Please fill in all required fields', { type: 'error' })
+      return
+    }
+
+    const runData: RunCreate = {
       date,
       time,
       target_pace: targetPace,
       distance: parseFloat(distance),
       route,
+      status: 'scheduled', // Default status for new runs
       meetup_location: meetupLocation,
-      max_participants: maxParticipants ? parseInt(maxParticipants, 10) : undefined,
-      qr_code: `run-${Date.now()}`, // Generate a unique QR code
+      qr_code: `run-${Date.now()}`,
     }
 
     try {
-      const newRun = await insertRun(runData)
-
+      await insertRun(runData)
       toast.show('Run created successfully', { type: 'success' })
       router.push('/instructor')
     } catch (error) {
@@ -61,32 +65,37 @@ export function CreateRunScreen() {
           <Text fontSize="$6" fontWeight="bold">
             Create New Run
           </Text>
-          <Input placeholder="Date (YYYY-MM-DD)" value={date} onChangeText={setDate} />
-          <Input placeholder="Time (HH:MM)" value={time} onChangeText={setTime} />
+          <Input
+            placeholder="Date (YYYY-MM-DD)"
+            value={date.toISOString().split('T')[0]}
+            onChangeText={(value) => setDate(new Date(value))}
+          />
+          <Input placeholder="Time (HH:MM)" value={time} onChangeText={setTime} required />
           <Input
             placeholder="Target Pace (MM:SS)"
             value={targetPace}
             onChangeText={setTargetPace}
+            required
           />
           <Input
             placeholder="Distance (km)"
             value={distance}
             onChangeText={setDistance}
             keyboardType="numeric"
+            required
           />
-          <Input placeholder="Route" value={route} onChangeText={setRoute} />
+          <Input placeholder="Route (optional)" value={route} onChangeText={setRoute} />
           <Input
             placeholder="Meetup Location"
             value={meetupLocation}
             onChangeText={setMeetupLocation}
+            required
           />
-          <Input
-            placeholder="Max Participants"
-            value={maxParticipants}
-            onChangeText={setMaxParticipants}
-            keyboardType="numeric"
-          />
-          <Button onPress={handleSubmit} marginVertical="$4">
+          <Button
+            onPress={handleSubmit}
+            marginVertical="$4"
+            disabled={!time || !targetPace || !distance || !meetupLocation}
+          >
             Create Run
           </Button>
         </YStack>
