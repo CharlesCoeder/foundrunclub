@@ -1,54 +1,53 @@
 import { View, Text, styled } from '@tamagui/core'
 
 const StyledView = styled(View, {
-  borderRadius: 75,
+  borderRadius: 9999,
   justifyContent: 'center',
   alignItems: 'center',
   backgroundColor: '$blue10',
-
-  variants: {
-    size: {
-      small: {
-        width: 100,
-        height: 100,
-      },
-      medium: {
-        width: 150,
-        height: 150,
-      },
-      large: {
-        width: 200,
-        height: 200,
-      },
-    },
-  } as const,
-
-  defaultVariants: {
-    size: 'medium',
-  },
+  width: '100%',
+  height: '100%',
+  overflow: 'hidden',
 })
 
 const StyledText = styled(Text, {
   color: '$color',
   fontWeight: 'bold',
   userSelect: 'none',
+  textAlign: 'center',
 
   variants: {
     size: {
       small: {
-        fontSize: 24,
+        fontSize: 14,
+        lineHeight: 14,
       },
       medium: {
         fontSize: 40,
+        lineHeight: 40,
       },
       large: {
         fontSize: 56,
+        lineHeight: 56,
+      },
+    },
+    chars: {
+      1: {},
+      2: {
+        transform: [{ scale: 1 }],
+      },
+      3: {
+        transform: [{ scale: 0.95 }],
+      },
+      4: {
+        transform: [{ scale: 0.85 }],
       },
     },
   } as const,
 
   defaultVariants: {
     size: 'medium',
+    chars: 2,
   },
 })
 
@@ -59,18 +58,32 @@ interface DefaultProfilePictureProps {
 
 export function DefaultProfilePicture({ name, size = 'medium' }: DefaultProfilePictureProps) {
   const getInitials = (name: string) => {
+    // Get first letter of each word, up to 4 characters
     return name
       .split(' ')
       .map((part) => part[0])
       .join('')
       .toUpperCase()
+      .slice(0, 4)
   }
 
   const initials = getInitials(name)
+  const charCount = Math.min(initials.length, 4) as 1 | 2 | 3 | 4
+
+  // Adjust base font size for small avatars with multiple characters
+  const adjustedSize =
+    size === 'small' && charCount > 2
+      ? {
+          fontSize: 11,
+          lineHeight: 11,
+        }
+      : {}
 
   return (
-    <StyledView size={size}>
-      <StyledText size={size}>{initials}</StyledText>
+    <StyledView>
+      <StyledText size={size} chars={charCount} {...adjustedSize}>
+        {initials}
+      </StyledText>
     </StyledView>
   )
 }
