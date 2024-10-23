@@ -3,6 +3,8 @@ import { MapPin, Clock, Ruler } from '@tamagui/lucide-icons'
 import { Run } from 'app/types/run'
 import { useAuth } from 'app/utils/auth/useAuth'
 import { useRSVP } from 'app/utils/runs/useRSVP'
+import { useRunParticipants } from 'app/utils/runs/useRunParticipants'
+import { ProfilePicture } from 'app/components/ProfilePicture'
 
 interface RunCardProps {
   run: Run
@@ -12,7 +14,12 @@ interface RunCardProps {
 
 export function RunCard({ run, isSelected, onSelect }: RunCardProps) {
   const { user } = useAuth()
-  const { rsvpStatus, updateRSVP, isLoading } = useRSVP(run.id)
+  const {
+    participants,
+    isLoading: participantsLoading,
+    refreshParticipants,
+  } = useRunParticipants(run.id)
+  const { rsvpStatus, updateRSVP, isLoading: rsvpLoading } = useRSVP(run.id, refreshParticipants)
 
   const handleRSVP = async () => {
     try {
@@ -90,6 +97,28 @@ export function RunCard({ run, isSelected, onSelect }: RunCardProps) {
         </XStack>
       </YStack>
 
+      {/* Participants Section */}
+      {participants.length > 0 && (
+        <YStack marginTop="$2">
+          <Text fontSize="$2" color="$gray11" marginBottom="$1">
+            Participants ({participants.length})
+          </Text>
+          <XStack flexWrap="wrap" gap="$1" paddingTop="$2">
+            {participants.map((participant) => (
+              <ProfilePicture
+                key={participant.user_id}
+                imageUrl={participant.profile_image_url}
+                name={`${participant.first_name} ${participant.last_name}`}
+                size="small"
+                userId={participant.user_id}
+                tooltip
+                interactive
+              />
+            ))}
+          </XStack>
+        </YStack>
+      )}
+
       {/* RSVP Section */}
       {user && (
         <YStack marginTop="$2">
@@ -98,7 +127,7 @@ export function RunCard({ run, isSelected, onSelect }: RunCardProps) {
               <Button
                 width="100%"
                 theme={rsvpStatus === 'attending' ? 'gray' : 'green'}
-                disabled={isLoading}
+                disabled={rsvpLoading}
               >
                 {rsvpStatus === 'attending' ? 'Cancel RSVP' : 'RSVP'}
               </Button>

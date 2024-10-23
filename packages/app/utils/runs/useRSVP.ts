@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 
 type RSVPStatus = 'attending' | null
 
-export const useRSVP = (runId: number) => {
+export const useRSVP = (runId: number, onRSVPChange?: () => void) => {
   const { supabase, user } = useSupabase()
   const [rsvpStatus, setRsvpStatus] = useState<RSVPStatus>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -56,6 +56,10 @@ export const useRSVP = (runId: number) => {
       }
 
       setRsvpStatus(status)
+      // Call the callback after successful RSVP update
+      if (onRSVPChange) {
+        onRSVPChange()
+      }
     } catch (error) {
       console.error('Error updating RSVP:', error)
       throw error
