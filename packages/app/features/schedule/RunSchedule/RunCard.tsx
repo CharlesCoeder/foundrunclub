@@ -42,6 +42,16 @@ export function RunCard({ run, isSelected, onSelect }: RunCardProps) {
     return `${formattedHour}${minutes !== '00' ? ':' + minutes : ''}${period}`
   }
 
+  const formatPace = (pace: string) => {
+    const paceNum = parseFloat(pace)
+    const minutes = Math.floor(paceNum)
+    const seconds = Math.round((paceNum - minutes) * 60)
+
+    return seconds === 0
+      ? `${minutes}min/mi`
+      : `${minutes}:${seconds.toString().padStart(2, '0')}min/mi`
+  }
+
   return (
     <Card
       padding="$2"
@@ -75,7 +85,7 @@ export function RunCard({ run, isSelected, onSelect }: RunCardProps) {
         <XStack alignItems="center">
           <Ruler size={16} />
           <Text fontSize="$2" marginLeft="$1">
-            Pace: {run.target_pace}
+            Pace: {formatPace(run.target_pace)}
           </Text>
         </XStack>
       </YStack>
