@@ -1,8 +1,7 @@
 import React from 'react'
 import { Button, YStack } from '@my/ui'
-import { SolitoImage } from 'solito/image'
 import * as ExpoImagePicker from 'expo-image-picker'
-import { DefaultProfilePicture } from '../../../components/DefaultProfilePicture'
+import { ProfilePicture } from 'app/components/ProfilePicture'
 
 interface ImagePickerProps {
   onImageSelect: (uri: string) => void
@@ -33,19 +32,7 @@ const ImagePicker: React.FC<ImagePickerProps> = ({ onImageSelect, currentImageUr
 
   return (
     <YStack ai="center">
-      {currentImageUri ? (
-        <SolitoImage
-          src={currentImageUri}
-          width={150}
-          height={150}
-          style={{ borderRadius: 75 }}
-          alt="Selected image"
-          contentFit="cover"
-          onLayout={() => {}}
-        />
-      ) : (
-        <DefaultProfilePicture name={name} />
-      )}
+      <ProfilePicture imageUrl={currentImageUri} name={name} size="medium" />
       <Button onPress={handleImageSelection}>Select Image</Button>
     </YStack>
   )

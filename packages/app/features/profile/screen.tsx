@@ -4,8 +4,7 @@ import { useSupabase } from '../../provider/supabase'
 import { useRouter, useParams } from 'solito/navigation'
 import ImagePicker from 'app/features/profile/ImagePicker/ImagePicker'
 import { Platform } from 'react-native'
-import { SolitoImage } from 'solito/image'
-import { DefaultProfilePicture } from 'app/components/DefaultProfilePicture'
+import { ProfilePicture } from 'app/components/ProfilePicture'
 
 export function ProfileScreen() {
   const { supabase, user } = useSupabase()
@@ -141,20 +140,15 @@ export function ProfileScreen() {
           name={`${profile.first_name} ${profile.last_name}`}
         />
       )
-    } else if (profile.profile_image_url) {
+    } else {
       return (
-        <SolitoImage
-          src={profile.profile_image_url}
-          width={150}
-          height={150}
-          style={{ borderRadius: 75 }}
-          alt={`${profile.first_name} ${profile.last_name}'s profile picture`}
-          contentFit="cover"
-          onLayout={() => {}}
+        <ProfilePicture
+          imageUrl={profile.profile_image_url}
+          name={`${profile.first_name} ${profile.last_name}`}
+          size="medium"
+          userId={profile.id}
         />
       )
-    } else {
-      return <DefaultProfilePicture name={`${profile.first_name} ${profile.last_name}`} />
     }
   }
 

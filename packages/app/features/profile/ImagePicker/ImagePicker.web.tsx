@@ -1,8 +1,7 @@
 import React, { useRef } from 'react'
 import { Button, YStack } from '@my/ui'
-import { SolitoImage } from 'solito/image'
 import { useDropzone } from 'react-dropzone'
-import { DefaultProfilePicture } from '../../../components/DefaultProfilePicture'
+import { ProfilePicture } from 'app/components/ProfilePicture'
 
 interface ImagePickerProps {
   onImageSelect: (uri: string) => void
@@ -52,19 +51,7 @@ const ImagePicker: React.FC<ImagePickerProps> = ({ onImageSelect, currentImageUr
         }}
       >
         <input {...getInputProps()} />
-        {currentImageUri ? (
-          <SolitoImage
-            src={currentImageUri}
-            width={150}
-            height={150}
-            style={{ borderRadius: 75 }}
-            alt="Selected image"
-            contentFit="cover"
-            onLayout={() => {}}
-          />
-        ) : (
-          <DefaultProfilePicture name={name} />
-        )}
+        <ProfilePicture imageUrl={currentImageUri} name={name} size="medium" />
       </div>
       <input
         type="file"
