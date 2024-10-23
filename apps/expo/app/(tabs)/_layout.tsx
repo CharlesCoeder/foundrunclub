@@ -12,10 +12,12 @@ export default function TabsLayout() {
   useEffect(() => {
     const inAuthGroup = segments[0] === '(tabs)'
     const inProfileSection = segments.includes('profile')
+    // Check if trying to access own profile (which would be null/undefined when not logged in)
+    const isAccessingOwnProfile = segments.includes(`profile/${user?.id}`)
 
-    if (inAuthGroup && inProfileSection && !user) {
-      // Redirect to auth if trying to access profile without being logged in
-      router.replace('/(auth)')
+    if (inAuthGroup && inProfileSection && !user && isAccessingOwnProfile) {
+      // Only redirect if trying to access own profile without being logged in
+      router.replace('/(auth)/register')
     }
   }, [user, segments])
 
