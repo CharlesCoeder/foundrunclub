@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Button,
   Input,
@@ -18,6 +18,7 @@ import { KeyboardAvoidingView, Platform } from 'react-native'
 import { RunCreate } from 'app/types/run'
 import { DayPicker } from './DayPicker/DayPicker'
 import { ChevronDown } from '@tamagui/lucide-icons'
+import { InstructorSelector } from '../components/InstructorSelector'
 
 export function CreateRunScreen() {
   const [date, setDate] = useState<Date>(new Date())
@@ -26,6 +27,7 @@ export function CreateRunScreen() {
   const [distance, setDistance] = useState('')
   const [route, setRoute] = useState('')
   const [meetupLocation, setMeetupLocation] = useState('')
+  const [selectedInstructors, setSelectedInstructors] = useState<string[]>([])
 
   const { user, isInstructor, isAdmin } = useAuth()
   const { insertRun } = useInsertRun()
@@ -62,6 +64,12 @@ export function CreateRunScreen() {
     { value: 'Turtle Bay', label: 'Turtle Bay' },
   ]
 
+  useEffect(() => {
+    if (user?.id && selectedInstructors.length === 0) {
+      setSelectedInstructors([user.id])
+    }
+  }, [user?.id])
+
   const handleSubmit = async () => {
     if (!isInstructor && !isAdmin) {
       toast.show('You do not have permission to create runs', { type: 'error' })
@@ -82,6 +90,7 @@ export function CreateRunScreen() {
       status: 'scheduled', // Default status for new runs
       meetup_location: meetupLocation,
       qr_code: `run-${Date.now()}`,
+      instructor_ids: selectedInstructors,
     }
 
     try {
@@ -123,7 +132,7 @@ export function CreateRunScreen() {
             Create New Run
           </Text>
 
-          {/* Replace the date Input with DayPicker */}
+          {/* Date Select */}
           <DayPicker
             selected={date}
             onSelect={(selectedDate) => selectedDate && setDate(selectedDate)}
@@ -227,10 +236,24 @@ export function CreateRunScreen() {
               </Select.Viewport>
             </Select.Content>
           </Select>
+          {/* Instructor Select */}
+          {user && (
+            <InstructorSelector
+              currentUserId={user.id}
+              selectedInstructors={selectedInstructors}
+              onInstructorsChange={setSelectedInstructors}
+            />
+          )}
           <Button
             onPress={handleSubmit}
             marginVertical="$4"
-            disabled={!time || !targetPace || !distance || !meetupLocation}
+            disabled={
+              !time ||
+              !targetPace ||
+              !distance ||
+              !meetupLocation ||
+              selectedInstructors.length === 0
+            }
           >
             Create Run
           </Button>

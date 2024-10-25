@@ -8,7 +8,10 @@ export interface Run {
   route?: string
   meetup_location: string
   qr_code: string
-  status: string
+  status: 'scheduled' | 'completed'
+  max_participants?: number
+  created_at?: string
+  updated_at?: string
 }
 
 // Interface specifically for instructor-related run operations
@@ -19,4 +22,9 @@ export interface InstructorRun extends Run {
 }
 
 // Type for creating a new run
-export type RunCreate = Omit<Run, 'id'>
+export type RunCreate = Omit<Run, 'id' | 'created_at' | 'updated_at'> & {
+  instructor_ids: string[] // Array of instructor UUIDs
+}
+
+// Type for updating an existing run
+export type RunUpdate = Partial<Omit<RunCreate, 'qr_code'>>

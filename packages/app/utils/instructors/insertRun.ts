@@ -1,5 +1,6 @@
 import { useSupabase } from 'app/provider/supabase'
 import { RunCreate } from 'app/types/run'
+
 export const useInsertRun = () => {
   const { supabase } = useSupabase()
 
@@ -13,10 +14,19 @@ export const useInsertRun = () => {
       throw new Error('User is not authenticated')
     }
 
-    // Call the Supabase function to insert run and instructor
-    const { data, error } = await supabase.rpc('insert_run_and_instructor', {
-      run_data: runData,
-      instructor_id: user.data.user.id,
+    // Insert the run and create instructor associations
+    const { data, error } = await supabase.rpc('insert_run_and_instructors', {
+      run_data: {
+        date: runData.date,
+        time: runData.time,
+        target_pace: runData.target_pace,
+        distance: runData.distance,
+        route: runData.route,
+        status: runData.status,
+        meetup_location: runData.meetup_location,
+        qr_code: runData.qr_code,
+      },
+      instructor_ids: runData.instructor_ids,
     })
 
     if (error) {
