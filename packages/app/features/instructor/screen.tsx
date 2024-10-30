@@ -3,17 +3,19 @@ import { Button, YStack, XStack, Text, ScrollView, Spinner, Card, AlertDialog } 
 import { useRouter } from 'solito/navigation'
 import { useAuth } from 'app/utils/auth/useAuth'
 import { useGetInstructorRuns } from '../../utils/instructors/getInstructorRuns'
-import { Run } from 'app/types/run'
+import { Run, InstructorRun, EditRunData } from 'app/types/run'
 import { useDeleteRun } from 'app/utils/instructors/deleteRun'
-import { Trash } from '@tamagui/lucide-icons'
+import { Trash, Edit3 } from '@tamagui/lucide-icons'
+import { EditRunModal } from 'app/components/modals/EditRunModal'
 
 export function InstructorScreen() {
-  const [runs, setRuns] = useState<Run[] | null>(null)
+  const [runs, setRuns] = useState<InstructorRun[] | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { deleteRun } = useDeleteRun()
   const [isDeleting, setIsDeleting] = useState<number | null>(null)
   const [runToDelete, setRunToDelete] = useState<Run | null>(null)
+  const [editingRun, setEditingRun] = useState<EditRunData | null>(null)
 
   const { user, isInstructor, isAdmin } = useAuth()
   const { getUpcomingInstructorRuns } = useGetInstructorRuns()
@@ -59,6 +61,25 @@ export function InstructorScreen() {
     }
   }
 
+  const handleEditRun = (run: InstructorRun) => {
+    // Transform InstructorRun into EditRunData
+    const editRunData: EditRunData = {
+      id: run.id,
+      date: run.date,
+      time: run.time,
+      target_pace: run.target_pace,
+      distance: run.distance,
+      route: run.route,
+      meetup_location: run.meetup_location,
+      qr_code: run.qr_code,
+      status: run.status,
+      max_participants: run.max_participants,
+      instructor_ids: run.run_instructors.map((ri) => ri.instructor_id),
+    }
+
+    setEditingRun(editRunData)
+  }
+
   if (!user || (!isInstructor && !isAdmin)) {
     return <Text>You do not have permission to access this page.</Text>
   }
@@ -71,6 +92,20 @@ export function InstructorScreen() {
         </Text>
         <Button onPress={handleCreateRun}>Create New Run</Button>
       </XStack>
+
+      {/* 
+       Run Dialog */}
+      {editingRun && (
+        <EditRunModal
+          open={!!editingRun}
+          onOpenChange={(open) => !open && setEditingRun(null)}
+          run={editingRun}
+          onRunUpdated={() => {
+            fetchRuns()
+            setEditingRun(null)
+          }}
+        />
+      )}
 
       {/* This component is giving a warning about duplicate keys*/}
       <AlertDialog open={!!runToDelete}>
@@ -107,19 +142,22 @@ export function InstructorScreen() {
                   <Text fontWeight="bold">
                     {new Date(run.date).toLocaleDateString()} at {run.time}
                   </Text>
-                  <Text>Distance: {run.distance} km</Text>
+                  <Text>Distance: {run.distance} mi</Text>
                   <Text>Target Pace: {run.target_pace}</Text>
                   {run.route && <Text>Route: {run.route}</Text>}
                   {run.meetup_location && <Text>Meetup: {run.meetup_location}</Text>}
                 </YStack>
-                <Button
-                  icon={Trash}
-                  theme="red"
-                  size="$3"
-                  onPress={() => handleDeleteRun(run)}
-                  disabled={isDeleting === run.id}
-                  opacity={isDeleting === run.id ? 0.5 : 1}
-                />
+                <XStack gap="$2">
+                  <Button icon={Edit3} theme="blue" size="$3" onPress={() => handleEditRun(run)} />
+                  <Button
+                    icon={Trash}
+                    theme="red"
+                    size="$3"
+                    onPress={() => handleDeleteRun(run)}
+                    disabled={isDeleting === run.id}
+                    opacity={isDeleting === run.id ? 0.5 : 1}
+                  />
+                </XStack>
               </XStack>
             </Card>
           ))}

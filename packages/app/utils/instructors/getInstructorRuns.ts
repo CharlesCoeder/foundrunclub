@@ -24,7 +24,15 @@ export const useGetInstructorRuns = () => {
       .select(
         `
         *,
-        run_instructors!inner(instructor_id)
+        run_instructors!inner (
+          instructor_id,
+          users!inner (
+            id,
+            first_name,
+            last_name,
+            profile_image_url
+          )
+        )
       `
       )
       .gte('date', today)

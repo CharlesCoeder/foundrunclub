@@ -14,10 +14,19 @@ export interface Run {
   updated_at?: string
 }
 
+// Interface for instructor user data
+export interface InstructorUser {
+  id: string
+  first_name: string
+  last_name: string
+  profile_image_url?: string
+}
+
 // Interface specifically for instructor-related run operations
 export interface InstructorRun extends Run {
-  run_instructors?: {
+  run_instructors: {
     instructor_id: string
+    users?: InstructorUser
   }[]
 }
 
@@ -28,3 +37,6 @@ export type RunCreate = Omit<Run, 'id' | 'created_at' | 'updated_at'> & {
 
 // Type for updating an existing run
 export type RunUpdate = Partial<Omit<RunCreate, 'qr_code'>>
+
+// Type for the edit run modal
+export type EditRunData = RunCreate & { id: number }
