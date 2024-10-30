@@ -1,14 +1,25 @@
 import { useState, useEffect } from 'react'
-import { YStack, XStack, Button, H1, Paragraph, Input, TextArea, Spinner } from '@my/ui'
+import {
+  YStack,
+  XStack,
+  Button,
+  H1,
+  Paragraph,
+  Input,
+  TextArea,
+  Spinner,
+  Separator,
+  ScrollView,
+} from '@my/ui'
 import { useSupabase } from '../../provider/supabase'
-import { useRouter, useParams } from 'solito/navigation'
+import { useParams } from 'solito/navigation'
 import ImagePicker from 'app/features/profile/ImagePicker/ImagePicker'
 import { Platform } from 'react-native'
 import { ProfilePicture } from 'app/components/ProfilePicture'
+import { RewardsDashboard } from 'app/components/rewards/RewardsDashboard'
 
 export function ProfileScreen() {
   const { supabase, user } = useSupabase()
-  const router = useRouter()
   const { id } = useParams()
 
   const [profile, setProfile] = useState<any>(null)
@@ -169,47 +180,56 @@ export function ProfileScreen() {
   }
 
   return (
-    <YStack f={1} jc="flex-start" ai="center" p="$4">
-      <YStack ai="center" mb="$4">
-        {renderProfileImage()}
-      </YStack>
+    <ScrollView>
+      <YStack jc="flex-start" ai="center" p="$4">
+        <YStack ai="center" mb="$4">
+          {renderProfileImage()}
+        </YStack>
 
-      {isEditing ? (
-        <YStack ai="stretch" w="100%" maxWidth={300}>
-          <Input
-            value={editedProfile.first_name}
-            onChangeText={(text) => setEditedProfile({ ...editedProfile, first_name: text })}
-            placeholder="First Name"
-            mb="$2"
-          />
-          <Input
-            value={editedProfile.last_name}
-            onChangeText={(text) => setEditedProfile({ ...editedProfile, last_name: text })}
-            placeholder="Last Name"
-            mb="$2"
-          />
-          <TextArea
-            value={editedProfile.bio}
-            onChangeText={(text) => setEditedProfile({ ...editedProfile, bio: text })}
-            placeholder="Bio"
-            mb="$4"
-          />
-          <XStack jc="space-between">
-            <Button onPress={handleSave}>Save</Button>
-            <Button onPress={handleCancel} theme="alt2">
-              Cancel
-            </Button>
-          </XStack>
-        </YStack>
-      ) : (
-        <YStack ai="center">
-          <H1 mb="$2">
-            {profile.first_name} {profile.last_name}
-          </H1>
-          <Paragraph mb="$4">{profile.bio || 'No bio available'}</Paragraph>
-          {isOwnProfile && <Button onPress={handleEdit}>Edit Profile</Button>}
-        </YStack>
-      )}
-    </YStack>
+        {isEditing ? (
+          <YStack ai="stretch" w="100%" maxWidth={300}>
+            <Input
+              value={editedProfile.first_name}
+              onChangeText={(text) => setEditedProfile({ ...editedProfile, first_name: text })}
+              placeholder="First Name"
+              mb="$2"
+            />
+            <Input
+              value={editedProfile.last_name}
+              onChangeText={(text) => setEditedProfile({ ...editedProfile, last_name: text })}
+              placeholder="Last Name"
+              mb="$2"
+            />
+            <TextArea
+              value={editedProfile.bio}
+              onChangeText={(text) => setEditedProfile({ ...editedProfile, bio: text })}
+              placeholder="Bio"
+              mb="$4"
+            />
+            <XStack jc="space-between">
+              <Button onPress={handleSave}>Save</Button>
+              <Button onPress={handleCancel} theme="alt2">
+                Cancel
+              </Button>
+            </XStack>
+          </YStack>
+        ) : (
+          <YStack ai="center" w="100%">
+            <H1 mb="$2">
+              {profile.first_name} {profile.last_name}
+            </H1>
+            <Paragraph mb="$4">{profile.bio || 'No bio available'}</Paragraph>
+            {isOwnProfile && <Button onPress={handleEdit}>Edit Profile</Button>}
+
+            {isOwnProfile && (
+              <YStack w="100%" mt="$4">
+                <Separator mb="$4" />
+                <RewardsDashboard userId={profile.id} />
+              </YStack>
+            )}
+          </YStack>
+        )}
+      </YStack>
+    </ScrollView>
   )
 }
