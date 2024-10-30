@@ -15,13 +15,13 @@ export function Provider({ children, ...rest }: Omit<TamaguiProviderProps, 'conf
   const colorScheme = useColorScheme()
 
   return (
-    <SafeAreaProvider>
-      <TamaguiProvider
-        config={config}
-        defaultTheme={colorScheme === 'dark' ? 'dark' : 'light'}
-        {...rest}
-      >
-        <SupabaseProvider>
+    <SupabaseProvider>
+      <SafeAreaProvider>
+        <TamaguiProvider
+          config={config}
+          defaultTheme={colorScheme === 'dark' ? 'dark' : 'light'}
+          {...rest}
+        >
           <ToastProvider
             swipeDirection="horizontal"
             duration={6000}
@@ -33,8 +33,8 @@ export function Provider({ children, ...rest }: Omit<TamaguiProviderProps, 'conf
               <ToastViewport />
             </SafeAreaView>
           </ToastProvider>
-        </SupabaseProvider>
-      </TamaguiProvider>
-    </SafeAreaProvider>
+        </TamaguiProvider>
+      </SafeAreaProvider>
+    </SupabaseProvider>
   )
 }
