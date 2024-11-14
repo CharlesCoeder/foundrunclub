@@ -4,9 +4,9 @@ export interface Run {
   date: Date
   time: string
   distance: number
-  target_pace: string
-  route?: string
-  meetup_location: string
+  target_pace: string | null
+  route?: string | null
+  meetup_location: string | null
   qr_code: string
   status: 'scheduled' | 'completed'
   created_at?: string

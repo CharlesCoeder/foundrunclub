@@ -30,3 +30,11 @@ export const formatDate = (date: Date, format: 'short' | 'long' = 'long'): strin
     day: 'numeric',
   })
 }
+
+export const formatDateAbbrev = (date: Date) => {
+  return date.toLocaleDateString('en-US', {
+    weekday: 'short', // 'Wed' instead of 'Wednesday'
+    month: 'long',
+    day: 'numeric',
+  })
+}

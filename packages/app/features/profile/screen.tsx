@@ -17,6 +17,7 @@ import ImagePicker from 'app/features/profile/ImagePicker/ImagePicker'
 import { Platform } from 'react-native'
 import { ProfilePicture } from 'app/components/ProfilePicture'
 import { RewardsDashboard } from 'app/components/rewards/RewardsDashboard'
+import { AttendedRuns } from './AttendedRuns'
 
 export function ProfileScreen() {
   const { supabase, user } = useSupabase()
@@ -224,6 +225,8 @@ export function ProfileScreen() {
             {isOwnProfile && (
               <YStack w="100%" mt="$4">
                 <Separator mb="$4" />
+                <AttendedRuns />
+                <Separator my="$4" />
                 <RewardsDashboard userId={profile.id} />
               </YStack>
             )}
