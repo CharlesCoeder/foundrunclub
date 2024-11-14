@@ -87,23 +87,6 @@ export const config = createTamagui({
     hoverNone: { hover: 'none' },
     pointerCoarse: { pointer: 'coarse' },
   }),
-  defaultProps: {
-    Text: {
-      style: {
-        caretColor: 'transparent',
-      },
-    },
-    Paragraph: {
-      style: {
-        caretColor: 'transparent',
-      },
-    },
-    H1: {
-      style: {
-        caretColor: 'transparent',
-      },
-    },
-  },
 })
 
 // for the compiler to find it
