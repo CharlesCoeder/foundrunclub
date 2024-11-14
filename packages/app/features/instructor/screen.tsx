@@ -8,6 +8,7 @@ import { useDeleteRun } from 'app/utils/instructors/deleteRun'
 import { Trash, Edit3, QrCode } from '@tamagui/lucide-icons'
 import { EditRunModal } from 'app/components/modals/EditRunModal'
 import { QRCodeModal } from 'app/components/modals/QRCodeModal'
+import { formatDistance, formatPace, formatTime, formatDate } from 'app/utils/formatters'
 
 export function InstructorScreen() {
   const [runs, setRuns] = useState<InstructorRun[] | null>(null)
@@ -122,8 +123,8 @@ export function InstructorScreen() {
             <AlertDialog.Title>Delete Run</AlertDialog.Title>
             <AlertDialog.Description>
               Are you sure you want to delete the run scheduled for{' '}
-              {runToDelete && new Date(runToDelete.date).toLocaleDateString()} at{' '}
-              {runToDelete?.time}?
+              {runToDelete && formatDate(new Date(runToDelete.date))} at{' '}
+              {runToDelete && formatTime(runToDelete.time)}?
             </AlertDialog.Description>
 
             <XStack space="$3" justifyContent="flex-end">
@@ -147,10 +148,10 @@ export function InstructorScreen() {
               <XStack justifyContent="space-between" alignItems="center">
                 <YStack>
                   <Text fontWeight="bold">
-                    {new Date(run.date).toLocaleDateString()} at {run.time}
+                    {formatDate(new Date(run.date))} at {formatTime(run.time)}
                   </Text>
-                  <Text>Distance: {run.distance} mi</Text>
-                  <Text>Target Pace: {run.target_pace}</Text>
+                  <Text>Distance: {formatDistance(run.distance)}</Text>
+                  <Text>Target Pace: {formatPace(run.target_pace)}</Text>
                   {run.route && <Text>Route: {run.route}</Text>}
                   {run.meetup_location && <Text>Meetup: {run.meetup_location}</Text>}
                 </YStack>

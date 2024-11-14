@@ -5,6 +5,7 @@ import { useAuth } from 'app/utils/auth/useAuth'
 import { useRSVP } from 'app/utils/runs/useRSVP'
 import { useRunParticipants } from 'app/utils/runs/useRunParticipants'
 import { ProfilePicture } from 'app/components/ProfilePicture'
+import { formatDistance, formatPace, formatTime, formatDate } from 'app/utils/formatters'
 
 interface RunCardProps {
   run: Run
@@ -33,32 +34,6 @@ export function RunCard({ run, isSelected, onSelect }: RunCardProps) {
     }
   }
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-    })
-  }
-
-  const formatTime = (timeString: string) => {
-    const [hours, minutes] = timeString.split(':')
-    const hour = parseInt(hours, 10)
-    const period = hour >= 12 ? 'pm' : 'am'
-    const formattedHour = hour % 12 || 12
-    return `${formattedHour}${minutes !== '00' ? ':' + minutes : ''}${period}`
-  }
-
-  const formatPace = (pace: string) => {
-    const paceNum = parseFloat(pace)
-    const minutes = Math.floor(paceNum)
-    const seconds = Math.round((paceNum - minutes) * 60)
-
-    return seconds === 0
-      ? `${minutes}min/mi`
-      : `${minutes}:${seconds.toString().padStart(2, '0')}min/mi`
-  }
-
   return (
     <Card
       padding="$2"
@@ -67,11 +42,9 @@ export function RunCard({ run, isSelected, onSelect }: RunCardProps) {
       onPress={() => onSelect(run.id)}
     >
       <XStack justifyContent="space-between" alignItems="flex-start" marginBottom="$2">
-        <Text fontWeight="bold">
-          {run.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-        </Text>
+        <Text fontWeight="bold">{formatDate(run.date, 'short')}</Text>
         <Text fontSize="$2" color="$blue10">
-          {run.distance}mi
+          {formatDistance(run.distance)}
         </Text>
       </XStack>
 
@@ -142,12 +115,8 @@ export function RunCard({ run, isSelected, onSelect }: RunCardProps) {
                   </AlertDialog.Title>
                   <AlertDialog.Description>
                     {rsvpStatus === 'attending'
-                      ? `Are you sure you want to cancel your RSVP for the run on ${formatDate(
-                          run.date
-                        )} at ${formatTime(run.time)}?`
-                      : `Would you like to RSVP for the run on ${formatDate(run.date)} at ${formatTime(
-                          run.time
-                        )}?`}
+                      ? `Are you sure you want to cancel your RSVP for the run on ${formatDate(run.date)} at ${formatTime(run.time)}?`
+                      : `Would you like to RSVP for the run on ${formatDate(run.date)} at ${formatTime(run.time)}?`}
                   </AlertDialog.Description>
 
                   <XStack space="$3" justifyContent="flex-end">
