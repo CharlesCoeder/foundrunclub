@@ -24,6 +24,7 @@
     "react-native": "0.74.2",
     "react-native-web": "~0.19.12",
     "react-native-web-lite": "^1.112.4",
+    "react-qr-code": "^2.0.15",
     "tamagui": "^1.113.0",
     "vercel": "latest"
   },
