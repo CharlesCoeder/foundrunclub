@@ -1,21 +1,27 @@
 import { useEffect, useState } from 'react'
-import { useColorScheme } from 'react-native'
+import { useColorScheme, Linking } from 'react-native'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
-import { SplashScreen, Stack, Tabs } from 'expo-router'
+import { SplashScreen, Stack } from 'expo-router'
 import { Provider } from 'app/provider'
 import { NativeToast } from '@my/ui/src/NativeToast'
 import { useSupabase } from 'app/provider/supabase'
 import { Session } from '@supabase/supabase-js'
 import { useAuth } from 'app/utils/auth/useAuth'
 
+// Add this export for Expo Router linking configuration
+export const scheme = 'foundrunclub'
+
 export const unstable_settings = {
-  // Ensure that reloading on `/user` keeps a back button present.
-  initialRouteName: 'Home',
+  initialRouteName: 'index',
 }
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync()
+// Debug deep links in development
+if (__DEV__) {
+  Linking.addEventListener('url', (event) => {
+    console.log('Deep link received:', event.url)
+  })
+}
 
 export default function App() {
   const [interLoaded, interError] = useFonts({
@@ -64,6 +70,13 @@ function RootLayoutNav() {
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack screenOptions={{ headerShown: false }}>
           {session ? <Stack.Screen name="(tabs)" /> : <Stack.Screen name="(auth)" />}
+          <Stack.Screen
+            name="attendance/index"
+            options={{
+              headerShown: false,
+              presentation: 'modal',
+            }}
+          />
         </Stack>
         <NativeToast />
       </ThemeProvider>

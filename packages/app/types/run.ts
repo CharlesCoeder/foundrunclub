@@ -9,7 +9,6 @@ export interface Run {
   meetup_location: string
   qr_code: string
   status: 'scheduled' | 'completed'
-  max_participants?: number
   created_at?: string
   updated_at?: string
 }
