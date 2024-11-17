@@ -17,7 +17,7 @@ import ImagePicker from 'app/features/profile/ImagePicker/ImagePicker'
 import { Platform } from 'react-native'
 import { ProfilePicture } from 'app/components/ProfilePicture'
 import { RewardsDashboard } from 'app/components/rewards/RewardsDashboard'
-import { AttendedRuns } from './AttendedRuns'
+import { AttendedRuns } from './components/AttendedRunsList'
 
 export function ProfileScreen() {
   const { supabase, user } = useSupabase()
