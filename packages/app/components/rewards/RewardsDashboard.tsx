@@ -71,8 +71,8 @@ export function RewardsDashboard({ userId }: { userId: string }) {
 
   return (
     <YStack padding="$4" space="$4">
-      <YStack space="$2">
-        <H2>Rewards & Progress</H2>
+      <YStack gap="$2">
+        <H2>Rewards</H2>
         <Text color="$gray11">Total Runs Completed: {totalRuns}</Text>
       </YStack>
 

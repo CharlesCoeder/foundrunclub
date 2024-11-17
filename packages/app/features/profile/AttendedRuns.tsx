@@ -1,24 +1,28 @@
 import { useEffect, useState } from 'react'
 import { ScrollView } from 'react-native'
-import { H4, Paragraph, YStack, XStack, Spinner, Accordion } from '@my/ui'
+import { H2, Paragraph, YStack, XStack, Spinner, Accordion } from '@my/ui'
 import { ChevronDown } from '@tamagui/lucide-icons'
 import { useFetchUserAttendance, AttendedRun } from 'app/utils/attendance/fetchUserAttendance'
 import { formatDistance, formatDateAbbrev, formatTime } from 'app/utils/formatters'
 
-export function AttendedRuns() {
+export function AttendedRuns({ userId }: { userId: string }) {
   const [runs, setRuns] = useState<AttendedRun[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { fetchAttendedRuns } = useFetchUserAttendance()
 
   useEffect(() => {
-    loadRuns()
-  }, [])
+    if (userId) {
+      loadRuns()
+    }
+  }, [userId])
 
   const loadRuns = async () => {
+    if (!userId) return
+
     try {
       setLoading(true)
-      const attendedRuns = await fetchAttendedRuns()
+      const attendedRuns = await fetchAttendedRuns(userId)
       setRuns(attendedRuns)
       setError(null)
     } catch (err) {
@@ -46,7 +50,7 @@ export function AttendedRuns() {
 
   return (
     <YStack padding="$4" gap="$4">
-      <H4 size="$8">Your Attended Runs ({runs.length})</H4>
+      <H2> Run History ({runs.length})</H2>
       <ScrollView>
         {runs.length === 0 ? (
           <Paragraph>You haven't attended any runs yet.</Paragraph>

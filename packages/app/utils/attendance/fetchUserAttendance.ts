@@ -26,17 +26,9 @@ interface RunAttendanceRecord {
 export const useFetchUserAttendance = () => {
   const { supabase } = useSupabase()
 
-  const fetchAttendedRuns = async (): Promise<AttendedRun[]> => {
+  const fetchAttendedRuns = async (userId: string): Promise<AttendedRun[]> => {
     if (!supabase) {
       throw new Error('Supabase client is not available')
-    }
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      throw new Error('User not authenticated')
     }
 
     const { data, error } = await supabase
@@ -47,7 +39,7 @@ export const useFetchUserAttendance = () => {
         runs (*)
       `
       )
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .order('attended_at', { ascending: false })
 
     if (error) {

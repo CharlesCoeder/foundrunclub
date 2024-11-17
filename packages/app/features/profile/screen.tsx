@@ -222,14 +222,12 @@ export function ProfileScreen() {
             <Paragraph mb="$4">{profile.bio || 'No bio available'}</Paragraph>
             {isOwnProfile && <Button onPress={handleEdit}>Edit Profile</Button>}
 
-            {isOwnProfile && (
-              <YStack w="100%" mt="$4">
-                <Separator mb="$4" />
-                <AttendedRuns />
-                <Separator my="$4" />
-                <RewardsDashboard userId={profile.id} />
-              </YStack>
-            )}
+            <YStack w="100%" mt="$4">
+              <Separator mb="$4" />
+              {profile?.id && <AttendedRuns userId={profile.id} />}
+              <Separator my="$4" />
+              {profile?.id && <RewardsDashboard userId={profile.id} />}
+            </YStack>
           </YStack>
         )}
       </YStack>
