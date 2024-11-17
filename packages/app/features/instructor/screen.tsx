@@ -1,20 +1,19 @@
 import { useEffect, useState } from 'react'
-import { Button, YStack, XStack, Text, ScrollView, Spinner, Card, AlertDialog } from '@my/ui'
+import { Button, YStack, XStack, Text } from '@my/ui'
 import { useRouter } from 'solito/navigation'
 import { useAuth } from 'app/utils/auth/useAuth'
 import { useGetInstructorRuns } from '../../utils/instructors/getInstructorRuns'
 import { Run, InstructorRun, EditRunData } from 'app/types/run'
 import { useDeleteRun } from 'app/utils/instructors/deleteRun'
-import { Trash, Edit3, QrCode } from '@tamagui/lucide-icons'
 import { EditRunModal } from 'app/components/modals/EditRunModal'
 import { QRCodeModal } from 'app/components/modals/QRCodeModal'
-import { formatDistance, formatPace, formatTime, formatDate } from 'app/utils/formatters'
+import { RunList } from './components/RunList'
+import { DeleteRunDialog } from './components/DeleteRunDialog'
 
 export function InstructorScreen() {
   const [runs, setRuns] = useState<InstructorRun[] | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { deleteRun } = useDeleteRun()
   const [isDeleting, setIsDeleting] = useState<number | null>(null)
   const [runToDelete, setRunToDelete] = useState<Run | null>(null)
   const [editingRun, setEditingRun] = useState<EditRunData | null>(null)
@@ -22,6 +21,7 @@ export function InstructorScreen() {
 
   const { user, isInstructor, isAdmin } = useAuth()
   const { getUpcomingInstructorRuns } = useGetInstructorRuns()
+  const { deleteRun } = useDeleteRun()
   const router = useRouter()
 
   const fetchRuns = async () => {
@@ -65,7 +65,6 @@ export function InstructorScreen() {
   }
 
   const handleEditRun = (run: InstructorRun) => {
-    // Transform InstructorRun into EditRunData
     const editRunData: EditRunData = {
       id: run.id,
       date: run.date,
@@ -101,8 +100,6 @@ export function InstructorScreen() {
         <Button onPress={handleCreateRun}>Create New Run</Button>
       </XStack>
 
-      {/* 
-       Run Dialog */}
       {editingRun && (
         <EditRunModal
           open={!!editingRun}
@@ -115,65 +112,22 @@ export function InstructorScreen() {
         />
       )}
 
-      {/* This component is giving a warning about duplicate keys*/}
-      <AlertDialog open={!!runToDelete}>
-        <AlertDialog.Portal>
-          <AlertDialog.Overlay />
-          <AlertDialog.Content>
-            <AlertDialog.Title>Delete Run</AlertDialog.Title>
-            <AlertDialog.Description>
-              Are you sure you want to delete the run scheduled for{' '}
-              {runToDelete && formatDate(new Date(runToDelete.date))} at{' '}
-              {runToDelete && formatTime(runToDelete.time)}?
-            </AlertDialog.Description>
+      <DeleteRunDialog
+        run={runToDelete}
+        isDeleting={isDeleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setRunToDelete(null)}
+      />
 
-            <XStack space="$3" justifyContent="flex-end">
-              <Button onPress={() => setRunToDelete(null)}>Cancel</Button>
-              <Button theme="red" onPress={confirmDelete} disabled={isDeleting === runToDelete?.id}>
-                Delete
-              </Button>
-            </XStack>
-          </AlertDialog.Content>
-        </AlertDialog.Portal>
-      </AlertDialog>
-
-      {loading ? (
-        <Spinner size="large" />
-      ) : error ? (
-        <Text color="$red10">{error}</Text>
-      ) : runs && runs.length > 0 ? (
-        <ScrollView>
-          {runs.map((run) => (
-            <Card key={run.id} marginVertical="$2" padding="$3">
-              <XStack justifyContent="space-between" alignItems="center">
-                <YStack>
-                  <Text fontWeight="bold">
-                    {formatDate(new Date(run.date))} at {formatTime(run.time)}
-                  </Text>
-                  <Text>Distance: {formatDistance(run.distance)}</Text>
-                  <Text>Target Pace: {formatPace(run.target_pace)}</Text>
-                  {run.route && <Text>Route: {run.route}</Text>}
-                  {run.meetup_location && <Text>Meetup: {run.meetup_location}</Text>}
-                </YStack>
-                <XStack gap="$2">
-                  <Button icon={QrCode} theme="green" size="$3" onPress={() => setQrCodeRun(run)} />
-                  <Button icon={Edit3} theme="blue" size="$3" onPress={() => handleEditRun(run)} />
-                  <Button
-                    icon={Trash}
-                    theme="red"
-                    size="$3"
-                    onPress={() => handleDeleteRun(run)}
-                    disabled={isDeleting === run.id}
-                    opacity={isDeleting === run.id ? 0.5 : 1}
-                  />
-                </XStack>
-              </XStack>
-            </Card>
-          ))}
-        </ScrollView>
-      ) : (
-        <Text>No upcoming runs found.</Text>
-      )}
+      <RunList
+        runs={runs}
+        loading={loading}
+        error={error}
+        isDeleting={isDeleting}
+        onDelete={handleDeleteRun}
+        onEdit={handleEditRun}
+        onQrCode={setQrCodeRun}
+      />
     </YStack>
   )
 }

@@ -54,7 +54,7 @@ export function InstructorSelector({
         <XStack
           key={instructor.id}
           alignItems="center"
-          space="$2"
+          gap="$2"
           backgroundColor="$gray3"
           padding="$2"
           borderRadius="$2"
