@@ -158,13 +158,12 @@ export function EditRunModal({ open, onOpenChange, run, onRunUpdated }: EditRunM
   return (
     <Dialog modal open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay
-          key="overlay"
-        />
+        <Dialog.Overlay key="overlay" zIndex={100000} />
         <Dialog.Content
           bordered
           elevate
           key="content"
+          zIndex={100001}
           animation={[
             'quick',
             {
@@ -222,11 +221,11 @@ export function EditRunModal({ open, onOpenChange, run, onRunUpdated }: EditRunM
                         <Adapt.Contents />
                       </Sheet.ScrollView>
                     </Sheet.Frame>
-                    <Sheet.Overlay />
+                    <Sheet.Overlay zIndex={100002} />
                   </Sheet>
                 </Adapt>
 
-                <Select.Content>
+                <Select.Content zIndex={100003}>
                   <Select.Viewport>
                     <Select.Group>
                       {timeOptions.map((option, index) => (
@@ -240,7 +239,7 @@ export function EditRunModal({ open, onOpenChange, run, onRunUpdated }: EditRunM
               </Select>
 
               {/* Pace Select */}
-              <Select value={targetPace} onValueChange={setTargetPace}>
+              <Select value={targetPace || ''} onValueChange={setTargetPace}>
                 <Select.Trigger width="100%" iconAfter={ChevronDown}>
                   <Select.Value>
                     {paceOptions.find((opt) => opt.value === targetPace)?.label ||
@@ -255,11 +254,11 @@ export function EditRunModal({ open, onOpenChange, run, onRunUpdated }: EditRunM
                         <Adapt.Contents />
                       </Sheet.ScrollView>
                     </Sheet.Frame>
-                    <Sheet.Overlay />
+                    <Sheet.Overlay zIndex={100002} />
                   </Sheet>
                 </Adapt>
 
-                <Select.Content>
+                <Select.Content zIndex={100003}>
                   <Select.Viewport>
                     <Select.Group>
                       {paceOptions.map((option, index) => (
@@ -282,7 +281,7 @@ export function EditRunModal({ open, onOpenChange, run, onRunUpdated }: EditRunM
               <Input placeholder="Route (optional)" value={route} onChangeText={setRoute} />
 
               {/* Location Select */}
-              <Select value={meetupLocation} onValueChange={setMeetupLocation}>
+              <Select value={meetupLocation || ''} onValueChange={setMeetupLocation}>
                 <Select.Trigger width="100%" iconAfter={ChevronDown}>
                   <Select.Value>
                     {locationOptions.find((opt) => opt.value === meetupLocation)?.label ||
@@ -297,11 +296,11 @@ export function EditRunModal({ open, onOpenChange, run, onRunUpdated }: EditRunM
                         <Adapt.Contents />
                       </Sheet.ScrollView>
                     </Sheet.Frame>
-                    <Sheet.Overlay />
+                    <Sheet.Overlay zIndex={100002} />
                   </Sheet>
                 </Adapt>
 
-                <Select.Content>
+                <Select.Content zIndex={100003}>
                   <Select.Viewport>
                     <Select.Group>
                       {locationOptions.map((option, index) => (
