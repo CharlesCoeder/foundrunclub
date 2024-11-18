@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ScrollView, YStack, Button, Text, Spinner } from 'tamagui'
+import { Platform } from 'react-native'
 import { useSupabase } from 'app/provider/supabase'
 import { useAuth } from 'app/utils/auth/useAuth'
 import { ChatMessage } from 'app/types/chat'
@@ -137,13 +138,16 @@ export function Chat() {
   }
 
   return (
-    <YStack f={1}>
+    <YStack f={1} pos="relative" height="100%">
       <ScrollView
         ref={setScrollViewRef}
         f={1}
-        p="$4"
         bounces={false}
         maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
+        contentContainerStyle={{
+          padding: 16,
+          paddingBottom: 100,
+        }}
       >
         {hasMore && !loading && (
           <Button onPress={() => loadMessages(false)} theme="alt2" mb="$4">
@@ -157,19 +161,36 @@ export function Chat() {
           </YStack>
         )}
 
-        <YStack space="$3">
+        <YStack gap="$3">
           {messages.map((message) => (
             <ChatMessageItem key={message.id} message={message} />
           ))}
         </YStack>
       </ScrollView>
 
-      <ChatInput
-        value={newMessage}
-        onChange={setNewMessage}
-        onSend={sendMessage}
-        sending={sending}
-      />
+      <YStack
+        pos="absolute"
+        bottom={0}
+        left={0}
+        right={0}
+        backgroundColor="$background"
+        zi={1000}
+        elevation={5}
+        style={
+          Platform.OS === 'web'
+            ? {
+                position: 'fixed', // Apply fixed position through style prop for web
+              }
+            : undefined
+        }
+      >
+        <ChatInput
+          value={newMessage}
+          onChange={setNewMessage}
+          onSend={sendMessage}
+          sending={sending}
+        />
+      </YStack>
     </YStack>
   )
 }

@@ -26,5 +26,9 @@ export function CommunityScreen() {
     )
   }
 
-  return <Chat />
+  return (
+    <YStack f={1} minHeight="100%" height="100%">
+      <Chat />
+    </YStack>
+  )
 }
