@@ -1,5 +1,5 @@
 import { Tabs, useRouter, useSegments } from 'expo-router'
-import { Home, Calendar, User, PersonStanding } from '@tamagui/lucide-icons'
+import { Home, Calendar, User, PersonStanding, MessageCircle } from '@tamagui/lucide-icons'
 import { useAuth } from 'app/utils/auth/useAuth'
 import { useEffect } from 'react'
 
@@ -51,6 +51,14 @@ export default function TabsLayout() {
         options={{
           title: 'Schedule',
           tabBarIcon: ({ color }) => <Calendar size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="community"
+        options={{
+          title: 'Community',
+          tabBarIcon: ({ color }) => <MessageCircle size={24} color={color} />,
+          href: user ? '/community' : null,
         }}
       />
       <Tabs.Screen
