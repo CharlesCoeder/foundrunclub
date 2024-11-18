@@ -19,11 +19,14 @@ export function Chat() {
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const [scrollViewRef, setScrollViewRef] = useState<ScrollView | null>(null)
+  const [isScrollReady, setIsScrollReady] = useState(false)
 
   // Load initial messages
   useEffect(() => {
-    loadMessages(true)
-  }, [supabase]) // Depend on supabase to ensure we have the client
+    loadMessages(true).then(() => {
+      setIsScrollReady(true)
+    })
+  }, [supabase])
 
   const loadMessages = async (isInitial = false) => {
     if (!supabase) return
@@ -66,12 +69,12 @@ export function Chat() {
     }
   }
 
-  // Scroll to bottom on initial load and new messages
+  // Separate effect for initial scroll
   useEffect(() => {
-    if (scrollViewRef) {
-      scrollViewRef.scrollToEnd({ animated: true })
+    if (isScrollReady && scrollViewRef && messages.length > 0) {
+      scrollViewRef.scrollToEnd({ animated: false })
     }
-  }, [messages.length])
+  }, [isScrollReady, messages.length])
 
   // Set up realtime subscription
   useEffect(() => {
@@ -143,25 +146,29 @@ export function Chat() {
         ref={setScrollViewRef}
         f={1}
         bounces={false}
+        scrollEnabled={isScrollReady}
         maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
         contentContainerStyle={{
           padding: 16,
           paddingBottom: 100,
+          flexGrow: 1,
+          justifyContent: 'flex-end'
         }}
+        invertStickyHeaders
       >
-        {hasMore && !loading && (
-          <Button onPress={() => loadMessages(false)} theme="alt2" mb="$4">
-            <Text>Load More</Text>
-          </Button>
-        )}
+        <YStack gap="$3" jc="flex-end">
+          {hasMore && !loading && (
+            <Button onPress={() => loadMessages(false)} theme="alt2" mb="$4">
+              <Text>Load More</Text>
+            </Button>
+          )}
 
-        {loading && (
-          <YStack ai="center" p="$4">
-            <Spinner />
-          </YStack>
-        )}
+          {loading && (
+            <YStack ai="center" p="$4">
+              <Spinner />
+            </YStack>
+          )}
 
-        <YStack gap="$3">
           {messages.map((message) => (
             <ChatMessageItem key={message.id} message={message} />
           ))}
