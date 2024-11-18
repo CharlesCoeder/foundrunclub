@@ -9,7 +9,16 @@ interface ChatInputProps {
 
 export function ChatInput({ value, onChange, onSend, sending }: ChatInputProps) {
   return (
-    <XStack p="$4" gap="$2" bw={1} btc="$borderColor">
+    <XStack
+      p="$4"
+      gap="$2"
+      bw={1}
+      btc="$borderColor"
+      backgroundColor="$background"
+      borderBottomWidth={0}
+      borderRightWidth={0}
+      borderLeftWidth={0}
+    >
       <Input
         f={1}
         value={value}
