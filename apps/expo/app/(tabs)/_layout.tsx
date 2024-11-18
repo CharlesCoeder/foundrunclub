@@ -2,6 +2,12 @@ import { Tabs, useRouter, useSegments } from 'expo-router'
 import { Home, Calendar, User, PersonStanding, MessageCircle } from '@tamagui/lucide-icons'
 import { useAuth } from 'app/utils/auth/useAuth'
 import { useEffect } from 'react'
+import { GetThemeValueForKey } from '@tamagui/core'
+
+// Helper function to convert the string color to a valid Tamagui color token
+function getIconColor(color: string): GetThemeValueForKey<'color'> {
+  return color as GetThemeValueForKey<'color'>
+}
 
 export default function TabsLayout() {
   const { isInstructor, isAdmin, user } = useAuth()
@@ -43,21 +49,21 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <Home size={24} color={color} />,
+          tabBarIcon: ({ color }) => <Home size={24} color={getIconColor(color)} />,
         }}
       />
       <Tabs.Screen
         name="schedule"
         options={{
           title: 'Schedule',
-          tabBarIcon: ({ color }) => <Calendar size={24} color={color} />,
+          tabBarIcon: ({ color }) => <Calendar size={24} color={getIconColor(color)} />,
         }}
       />
       <Tabs.Screen
         name="community"
         options={{
           title: 'Community',
-          tabBarIcon: ({ color }) => <MessageCircle size={24} color={color} />,
+          tabBarIcon: ({ color }) => <MessageCircle size={24} color={getIconColor(color)} />,
           href: user ? '/community' : null,
         }}
       />
@@ -65,7 +71,7 @@ export default function TabsLayout() {
         name="profile/[id]"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color }) => <User size={24} color={color} />,
+          tabBarIcon: ({ color }) => <User size={24} color={getIconColor(color)} />,
           href: user ? `/profile/${user.id}` : null,
         }}
       />
@@ -73,7 +79,7 @@ export default function TabsLayout() {
         name="instructor"
         options={{
           title: 'Instructor',
-          tabBarIcon: ({ color }) => <PersonStanding size={24} color={color} />,
+          tabBarIcon: ({ color }) => <PersonStanding size={24} color={getIconColor(color)} />,
           href: isInstructor || isAdmin ? '/instructor' : null,
         }}
       />
