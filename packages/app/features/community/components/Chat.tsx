@@ -7,6 +7,7 @@ import { toGiftedMessage, fromGiftedMessage } from 'app/utils/chat/messageTransf
 import { YStack, Spinner } from '@my/ui'
 import { Platform } from 'react-native'
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs'
+import { ProfilePicture } from 'app/components/ProfilePicture'
 
 const MESSAGES_PER_PAGE = 20
 
@@ -151,6 +152,21 @@ export function Chat() {
           user?.user_metadata?.last_name || ''
         }`.trim(),
         avatar: user?.user_metadata?.profile_image_url,
+      }}
+      renderAvatar={(props) => {
+        const avatar = props.currentMessage?.user?.avatar
+        const avatarUrl = typeof avatar === 'string' ? avatar : undefined
+
+        return (
+          <ProfilePicture
+            imageUrl={avatarUrl}
+            name={props.currentMessage?.user?.name || ''}
+            size="small"
+            userId={props.currentMessage?.user?._id as string}
+            tooltip
+            interactive
+          />
+        )
       }}
       loadEarlier={hasMore}
       isLoadingEarlier={loadingMore}
